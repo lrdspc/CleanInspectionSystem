@@ -124,30 +124,6 @@ const ISSUE_IMAGES: Record<string, IssueImage> = {
     caption: "Exemplo de sentido de montagem incorreto em telhas Brasilit",
     width: 500,
     height: 350
-  },
-  "Estrutura Desalinhada": {
-    path: path.join(__dirname, "image_1740422531117.png"),
-    caption: "Exemplo de estrutura desalinhada em telhas Brasilit",
-    width: 500,
-    height: 350
-  },
-  "Uso de Cumeeira Cerâmica": {
-    path: path.join(__dirname, "image_1740422544112.png"),
-    caption: "Exemplo de uso de cumeeira cerâmica em telhas Brasilit",
-    width: 500,
-    height: 350
-  },
-  "Uso de Argamassa em Substituição a Peças Complementares": {
-    path: path.join(__dirname, "image_1740422557399.png"),
-    caption: "Exemplo de uso de argamassa em substituição a peças complementares em telhas Brasilit",
-    width: 500,
-    height: 350
-  },
-  "Fixação de Acessórios Complementares Realizada de Forma Inadequada": {
-    path: path.join(__dirname, "image_1740422571215.png"),
-    caption: "Exemplo de fixação inadequada de acessórios complementares em telhas Brasilit",
-    width: 500,
-    height: 350
   }
 };
 
