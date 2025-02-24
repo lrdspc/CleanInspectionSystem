@@ -44,45 +44,45 @@ const FONTS = {
   secondary: "Arial",
 };
 
-const ISSUE_IMAGES: Record<string, { path: string; caption: string; width: number; height: number; }> = {
+const ISSUE_IMAGES: Record<string, { filename: string; caption: string; width: number; height: number; }> = {
   "Armazenagem Incorreta": {
-    path: "/attached_assets/images/armazenagem-incorreta.png",
+    filename: "armazenagem-incorreta.png",
     caption: "Exemplo de armazenagem incorreta de telhas Brasilit",
     width: 500,
     height: 350
   },
   "Carga Permanente sobre as Telhas": {
-    path: "/attached_assets/images/carga-permanente.png",
+    filename: "carga-permanente.png",
     caption: "Exemplo de carga permanente inadequada sobre telhas Brasilit",
     width: 500,
     height: 350
   },
   "Corte de Canto Incorreto ou Ausente": {
-    path: "/attached_assets/images/corte-canto-incorreto.png",
+    filename: "corte-canto-incorreto.png",
     caption: "Exemplo de corte de canto incorreto em telha Brasilit",
     width: 500,
     height: 350
   },
   "Fixação Irregular das Telhas": {
-    path: "/attached_assets/images/fixacao-irregular.png",
+    filename: "fixacao-irregular.png",
     caption: "Exemplo de fixação irregular em telhas Brasilit",
     width: 500,
     height: 350
   },
   "Inclinação da Telha Inferior ao Recomendado": {
-    path: "/attached_assets/images/inclinacao-incorreta.png",
+    filename: "inclinacao-incorreta.png",
     caption: "Exemplo de inclinação inadequada em telhas Brasilit",
     width: 500,
     height: 350
   },
   "Marcas de Caminhamento sobre o Telhado": {
-    path: "/attached_assets/images/marca-caminhamento.png",
+    filename: "marca-caminhamento.png",
     caption: "Exemplo de marcas de caminhamento inadequado sobre telhas Brasilit",
     width: 500,
     height: 350
   },
   "Balanço Livre do Beiral Incorreto": {
-    path: "/attached_assets/images/balanco-incorreto.png",
+    filename: "balanco-incorreto.png",
     caption: "Exemplo de balanço livre incorreto do beiral em telhas Brasilit",
     width: 500,
     height: 350
@@ -91,12 +91,14 @@ const ISSUE_IMAGES: Record<string, { path: string; caption: string; width: numbe
 
 function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   const issueImage = ISSUE_IMAGES[issue];
-  if (!issueImage) return;
+  if (!issueImage) {
+    console.log(`Nenhuma imagem configurada para o problema: ${issue}`);
+    return;
+  }
 
   try {
-    // Removendo o process.cwd() já que o caminho já é absoluto
-    const imagePath = issueImage.path;
-    console.log(`Tentando carregar imagem para ${issue} de: ${imagePath}`);
+    const imagePath = path.join('attached_assets', 'images', issueImage.filename);
+    console.log(`Tentando carregar imagem: ${imagePath}`);
 
     if (!fs.existsSync(imagePath)) {
       console.error(`Imagem não encontrada: ${imagePath}`);
@@ -128,7 +130,6 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
               width: issueImage.width,
               height: issueImage.height,
             },
-            type: 'png'
           }),
         ],
       })
@@ -664,7 +665,7 @@ function generateSignatures(inspection: Inspection): Paragraph[] {
       ],
     }),
     new Paragraph({
-      spacing: { before: 120, after: 120 }, // Corrigido o erro de beforebefore
+      spacing: { before: 120, after:120 },
       children: [
         new TextRun({
           text: "Departamento de Assistência Técnica",
