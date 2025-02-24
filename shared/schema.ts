@@ -9,6 +9,12 @@ const tileSpecSchema = z.object({
   count: z.string().optional(),
 });
 
+const issueImageSchema = z.object({
+  issueType: z.string(),
+  imageUrl: z.string(),
+  caption: z.string().optional(),
+});
+
 export const inspections = pgTable("inspections", {
   id: serial("id").primaryKey(),
   dateInspected: date("date_inspected"),
@@ -25,7 +31,8 @@ export const inspections = pgTable("inspections", {
   manager: text("manager"),
   region: text("region"),
   issues: text("issues").array(),
-  tileSpecs: jsonb("tile_specs").array().$type<z.infer<typeof tileSpecSchema>[]>()
+  tileSpecs: jsonb("tile_specs").array().$type<z.infer<typeof tileSpecSchema>[]>(),
+  issueImages: jsonb("issue_images").array().$type<z.infer<typeof issueImageSchema>[]>()
 });
 
 export const insertInspectionSchema = createInsertSchema(inspections);

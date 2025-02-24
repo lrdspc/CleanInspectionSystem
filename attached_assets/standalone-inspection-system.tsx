@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { z } from "zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -47,6 +47,11 @@ type FormData = {
     count: string;
   }>;
   selectedIssues: string[];
+  issueImages: Array<{
+    issueType: string;
+    imageUrl: string;
+    caption?: string;
+  }>;
 };
 
 const ISSUE_DESCRIPTIONS = {
@@ -110,6 +115,7 @@ export function InspectionSystem() {
       count: "",
     }],
     selectedIssues: [],
+    issueImages: [],
   });
 
   const reportRef = useRef<HTMLDivElement>(null);
@@ -122,12 +128,40 @@ export function InspectionSystem() {
     }));
   };
 
+  const handleImageUpload = useCallback(async (issue: string, file: File) => {
+    try {
+      // Create a base64 representation of the image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+
+        setFormData((prev) => ({
+          ...prev,
+          issueImages: [
+            ...prev.issueImages.filter(img => img.issueType !== issue),
+            {
+              issueType: issue,
+              imageUrl: base64String,
+              caption: `Foto do problema: ${issue}`
+            }
+          ]
+        }));
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Erro ao processar imagem:', error);
+    }
+  }, []);
+
   const handleCheckboxChange = (issue: string, checked: boolean) => {
     setFormData((prev) => ({
       ...prev,
       selectedIssues: checked
         ? [...prev.selectedIssues, issue]
         : prev.selectedIssues.filter((i) => i !== issue),
+      issueImages: checked
+        ? prev.issueImages
+        : prev.issueImages.filter((img) => img.issueType !== issue)
     }));
   };
 
@@ -198,17 +232,40 @@ export function InspectionSystem() {
               <h2 className="text-xl font-semibold mb-4">Problemas Identificados</h2>
               <div className="grid grid-cols-1 gap-3">
                 {ROOF_ISSUES.map((issue) => (
-                  <div key={issue} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50">
-                    <input
-                      type="checkbox"
-                      id={issue}
-                      checked={formData.selectedIssues.includes(issue)}
-                      onChange={(e) => handleCheckboxChange(issue, e.target.checked)}
-                      className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                    />
-                    <label htmlFor={issue} className="flex-1 text-sm">
-                      {issue}
-                    </label>
+                  <div key={issue} className="space-y-3">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        id={issue}
+                        checked={formData.selectedIssues.includes(issue)}
+                        onChange={(e) => handleCheckboxChange(issue, e.target.checked)}
+                        className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor={issue} className="flex-1 text-sm">
+                        {issue}
+                      </label>
+                    </div>
+                    {formData.selectedIssues.includes(issue) && (
+                      <div className="ml-8">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Adicionar foto do problema
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleImageUpload(issue, file);
+                          }}
+                          className="block w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100"
+                        />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -251,19 +308,33 @@ export function InspectionSystem() {
                 <div key={issue} className="mb-6">
                   <h3 className="text-xl font-bold mb-2">{`${index + 1}. ${issue}`}</h3>
                   <p className="mb-4">{ISSUE_DESCRIPTIONS[issue]}</p>
-                  {ISSUE_IMAGES[issue] && (
+                  {/* Show custom uploaded image if available, otherwise fall back to default */}
+                  {formData.issueImages.find(img => img.issueType === issue) ? (
+                    <div className="mb-4">
+                      <img 
+                        src={formData.issueImages.find(img => img.issueType === issue)?.imageUrl}
+                        alt={`Foto do problema: ${issue}`}
+                        className="max-w-full h-auto"
+                        style={{ maxHeight: '300px', objectFit: 'contain' }}
+                      />
+                      <p className="text-sm text-gray-600 mt-1 italic">
+                        {formData.issueImages.find(img => img.issueType === issue)?.caption}
+                      </p>
+                    </div>
+                  ) : ISSUE_IMAGES[issue] ? (
                     <div className="mb-4">
                       <img 
                         src={ISSUE_IMAGES[issue]} 
                         alt={`Exemplo de ${issue}`}
                         className="max-w-full h-auto"
                         crossOrigin="anonymous"
+                        style={{ maxHeight: '300px', objectFit: 'contain' }}
                       />
                       <p className="text-sm text-gray-600 mt-1 italic">
                         Exemplo ilustrativo de {issue.toLowerCase()}
                       </p>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               ))}
             </div>
