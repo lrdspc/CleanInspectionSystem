@@ -16,7 +16,6 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Simplified Inspection type with only the necessary fields
 interface Inspection {
   dateInspected?: string;
   clientName?: string;
@@ -47,82 +46,64 @@ const FONTS = {
 
 const ISSUE_IMAGES: Record<string, { path: string; caption: string; width: number; height: number; }> = {
   "Armazenagem Incorreta": {
-    path: path.join(__dirname, "images", "image_1740422278166.png"),
+    path: "armazenagem-incorreta.png",
     caption: "Exemplo de armazenagem incorreta de telhas Brasilit",
     width: 500,
     height: 350
   },
   "Carga Permanente sobre as Telhas": {
-    path: path.join(__dirname, "image_1740422372023.png"),
+    path: "carga-permanente.png",
     caption: "Exemplo de carga permanente inadequada sobre telhas Brasilit",
     width: 500,
     height: 350
   },
   "Corte de Canto Incorreto ou Ausente": {
-    path: path.join(__dirname, "image_1740422394929.png"),
+    path: "corte-canto-incorreto.png",
     caption: "Exemplo de corte de canto incorreto em telha Brasilit",
     width: 500,
     height: 350
   },
   "Fixação Irregular das Telhas": {
-    path: path.join(__dirname, "image_1740422418920.png"),
+    path: "fixacao-irregular.png",
     caption: "Exemplo de fixação irregular em telhas Brasilit",
     width: 500,
     height: 350
   },
   "Inclinação da Telha Inferior ao Recomendado": {
-    path: path.join(__dirname, "image_1740422431194.png"),
+    path: "inclinacao-incorreta.png",
     caption: "Exemplo de inclinação inadequada em telhas Brasilit",
     width: 500,
     height: 350
   },
   "Marcas de Caminhamento sobre o Telhado": {
-    path: path.join(__dirname, "image_1740422449838.png"),
+    path: "marca-caminhamento.png",
     caption: "Exemplo de marcas de caminhamento inadequado sobre telhas Brasilit",
     width: 500,
     height: 350
   },
   "Balanço Livre do Beiral Incorreto": {
-    path: path.join(__dirname, "image_1740422462274.png"),
+    path: "balanco-incorreto.png",
     caption: "Exemplo de balanço livre incorreto do beiral em telhas Brasilit",
-    width: 500,
-    height: 350
-  },
-  "Número de Apoios e Vão Livre Inadequados": {
-    path: path.join(__dirname, "image_1740422475343.png"),
-    caption: "Exemplo de número de apoios e vão livre inadequados em telhas Brasilit",
-    width: 500,
-    height: 350
-  },
-  "Recobrimento Incorreto": {
-    path: path.join(__dirname, "image_1740422488668.png"),
-    caption: "Exemplo de recobrimento incorreto em telhas Brasilit",
-    width: 500,
-    height: 350
-  },
-  "Sentido de Montagem Incorreto": {
-    path: path.join(__dirname, "image_1740422517924.png"),
-    caption: "Exemplo de sentido de montagem incorreto em telhas Brasilit",
     width: 500,
     height: 350
   }
 };
 
-// Simplified image handling function
 function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   const issueImage = ISSUE_IMAGES[issue];
   if (!issueImage) return;
 
   try {
-    const imagePath = path.join(__dirname, 'images', path.basename(issueImage.path));
+    const imagePath = path.join(__dirname, 'images', issueImage.path);
     console.log(`Tentando carregar imagem de: ${imagePath}`);
-    
+
     if (!fs.existsSync(imagePath)) {
       console.error(`Imagem não encontrada: ${imagePath}`);
       return;
     }
 
-    // Adiciona legenda antes da imagem
+    const imageBuffer = fs.readFileSync(imagePath);
+
     paragraphs.push(
       new Paragraph({
         spacing: { before: 120, after: 60 },
@@ -134,13 +115,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
             italics: true
           })
         ]
-      })
-    );
-
-    const imageBuffer = fs.readFileSync(issueImage.path);
-    console.log(`Imagem carregada com sucesso: ${issueImage.path}`);
-    
-    paragraphs.push(
+      }),
       new Paragraph({
         spacing: { before: 60, after: 240 },
         alignment: AlignmentType.CENTER,
@@ -156,21 +131,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
       })
     );
   } catch (error) {
-    console.error(`Erro ao adicionar imagem para ${issue}: ${error}`);
-    paragraphs.push(
-      new Paragraph({
-        spacing: { before: 120, after: 60 },
-        alignment: AlignmentType.CENTER,
-        children: [
-          new TextRun({
-            text: `[Erro ao carregar imagem para: ${issue}]`,
-            size: 20,
-            color: "FF0000",
-            bold: true
-          })
-        ]
-      })
-    );
+    console.error(`Erro ao adicionar imagem para ${issue}:`, error);
   }
 }
 
@@ -675,7 +636,7 @@ function generateConclusion(inspection: Inspection): Paragraph[] {
   } else {
     paragraphs.push(
       new Paragraph({
-        spacing: { before: 120 after: 120 },
+        spacing: { before: 120, after: 120 },
         alignment: AlignmentType.JUSTIFIED,
         children: [
           new TextRun({
