@@ -17,21 +17,27 @@ export function Layout({ children }: LayoutProps) {
             <NavigationMenu orientation="vertical" className="w-full">
               <NavigationMenuList className="flex-col items-start">
                 <NavigationMenuItem className="w-full">
-                  <Link href="/" className="flex items-center gap-2 w-full p-2 hover:bg-accent">
-                    <Home className="w-4 h-4" />
-                    <span>Início</span>
+                  <Link href="/">
+                    <NavigationMenuLink className="flex items-center gap-2 w-full p-2 hover:bg-accent">
+                      <Home className="w-4 h-4" />
+                      <span>Início</span>
+                    </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem className="w-full">
-                  <Link href="/new-inspection" className="flex items-center gap-2 w-full p-2 hover:bg-accent">
-                    <ClipboardList className="w-4 h-4" />
-                    <span>Nova Inspeção</span>
+                  <Link href="/new-inspection">
+                    <NavigationMenuLink className="flex items-center gap-2 w-full p-2 hover:bg-accent">
+                      <ClipboardList className="w-4 h-4" />
+                      <span>Nova Inspeção</span>
+                    </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem className="w-full">
-                  <Link href="/settings" className="flex items-center gap-2 w-full p-2 hover:bg-accent">
-                    <Settings className="w-4 h-4" />
-                    <span>Configurações</span>
+                  <Link href="/settings">
+                    <NavigationMenuLink className="flex items-center gap-2 w-full p-2 hover:bg-accent">
+                      <Settings className="w-4 h-4" />
+                      <span>Configurações</span>
+                    </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
               </NavigationMenuList>
