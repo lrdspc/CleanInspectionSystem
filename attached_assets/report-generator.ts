@@ -48,16 +48,6 @@ interface IssueImage {
   height: number;
 }
 
-// Update the ImageRun interface to fix TypeScript error
-interface IImageOptions {
-  data: Buffer;
-  transformation: {
-    width: number;
-    height: number;
-  };
-  type?: string;
-}
-
 const FONTS = {
   primary: "Arial",
   secondary: "Arial",
@@ -143,9 +133,8 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
               transformation: {
                 width: issueImage.width,
                 height: issueImage.height,
-              },
-              type: "image/png"
-            } as IImageOptions),
+              }
+            }),
           ],
         }),
         new Paragraph({
