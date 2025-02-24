@@ -83,7 +83,8 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   }
 
   try {
-    const imagePath = path.join('attached_assets', 'images', issueImage.filename);
+    const basePath = process.cwd();
+    const imagePath = path.join(basePath, 'attached_assets', 'images', issueImage.filename);
     console.log(`Tentando carregar imagem: ${imagePath}`);
 
     if (!fs.existsSync(imagePath)) {
@@ -109,7 +110,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
       })
     );
 
-    // Adiciona a imagem com configurações otimizadas para DOCX
+    // Adiciona a imagem usando configuração simplificada
     paragraphs.push(
       new Paragraph({
         spacing: { before: 60, after: 240 },
@@ -120,16 +121,6 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
             transformation: {
               width: 400,
               height: 300
-            },
-            floating: {
-              horizontalPosition: {
-                relative: "margin",
-                offset: 0
-              },
-              verticalPosition: {
-                relative: "paragraph",
-                offset: 0
-              }
             }
           })
         ]

@@ -79,13 +79,13 @@ const ISSUE_DESCRIPTIONS = {
 };
 
 const ISSUE_IMAGES = {
-  "Armazenagem Incorreta": "/attached_assets/images/armazenagem-incorreta.png",
-  "Carga Permanente sobre as Telhas": "/attached_assets/images/carga-permanente.png",
-  "Corte de Canto Incorreto ou Ausente": "/attached_assets/images/corte-canto-incorreto.png",
-  "Fixação Irregular das Telhas": "/attached_assets/images/fixacao-irregular.png",
-  "Inclinação da Telha Inferior ao Recomendado": "/attached_assets/images/inclinacao-incorreta.png",
-  "Marcas de Caminhamento sobre o Telhado": "/attached_assets/images/marca-caminhamento.png",
-  "Balanço Livre do Beiral Incorreto": "/attached_assets/images/balanco-incorreto.png"
+  "Armazenagem Incorreta": "./images/armazenagem-incorreta.png",
+  "Carga Permanente sobre as Telhas": "./images/carga-permanente.png",
+  "Corte de Canto Incorreto ou Ausente": "./images/corte-canto-incorreto.png",
+  "Fixação Irregular das Telhas": "./images/fixacao-irregular.png",
+  "Inclinação da Telha Inferior ao Recomendado": "./images/inclinacao-incorreta.png",
+  "Marcas de Caminhamento sobre o Telhado": "./images/marca-caminhamento.png",
+  "Balanço Livre do Beiral Incorreto": "./images/balanco-incorreto.png"
 };
 
 export function InspectionSystem() {
