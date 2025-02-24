@@ -108,7 +108,7 @@ const ISSUE_IMAGES: Record<string, { path: string; caption: string; width: numbe
   }
 };
 
-// Add image to report with error handling
+// Simplified image handling function
 function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   const issueImage = ISSUE_IMAGES[issue];
   if (!issueImage) return;
@@ -123,7 +123,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
             transformation: {
               width: 500,
               height: 350,
-            },
+            }
           }),
         ],
       })
@@ -634,7 +634,7 @@ function generateConclusion(inspection: Inspection): Paragraph[] {
   } else {
     paragraphs.push(
       new Paragraph({
-        spacing: { before: 120, after: 120 },
+        spacing: { before: 120 after: 120 },
         alignment: AlignmentType.JUSTIFIED,
         children: [
           new TextRun({
