@@ -46,43 +46,43 @@ const FONTS = {
 
 const ISSUE_IMAGES: Record<string, { path: string; caption: string; width: number; height: number; }> = {
   "Armazenagem Incorreta": {
-    path: "armazenagem-incorreta.png",
+    path: "/attached_assets/images/armazenagem-incorreta.png",
     caption: "Exemplo de armazenagem incorreta de telhas Brasilit",
     width: 500,
     height: 350
   },
   "Carga Permanente sobre as Telhas": {
-    path: "carga-permanente.png",
+    path: "/attached_assets/images/carga-permanente.png",
     caption: "Exemplo de carga permanente inadequada sobre telhas Brasilit",
     width: 500,
     height: 350
   },
   "Corte de Canto Incorreto ou Ausente": {
-    path: "corte-canto-incorreto.png",
+    path: "/attached_assets/images/corte-canto-incorreto.png",
     caption: "Exemplo de corte de canto incorreto em telha Brasilit",
     width: 500,
     height: 350
   },
   "Fixação Irregular das Telhas": {
-    path: "fixacao-irregular.png",
+    path: "/attached_assets/images/fixacao-irregular.png",
     caption: "Exemplo de fixação irregular em telhas Brasilit",
     width: 500,
     height: 350
   },
   "Inclinação da Telha Inferior ao Recomendado": {
-    path: "inclinacao-incorreta.png",
+    path: "/attached_assets/images/inclinacao-incorreta.png",
     caption: "Exemplo de inclinação inadequada em telhas Brasilit",
     width: 500,
     height: 350
   },
   "Marcas de Caminhamento sobre o Telhado": {
-    path: "marca-caminhamento.png",
+    path: "/attached_assets/images/marca-caminhamento.png",
     caption: "Exemplo de marcas de caminhamento inadequado sobre telhas Brasilit",
     width: 500,
     height: 350
   },
   "Balanço Livre do Beiral Incorreto": {
-    path: "balanco-incorreto.png",
+    path: "/attached_assets/images/balanco-incorreto.png",
     caption: "Exemplo de balanço livre incorreto do beiral em telhas Brasilit",
     width: 500,
     height: 350
@@ -94,8 +94,9 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   if (!issueImage) return;
 
   try {
-    const imagePath = path.join(__dirname, 'images', issueImage.path);
-    console.log(`Tentando carregar imagem de: ${imagePath}`);
+    // Removendo o process.cwd() já que o caminho já é absoluto
+    const imagePath = issueImage.path;
+    console.log(`Tentando carregar imagem para ${issue} de: ${imagePath}`);
 
     if (!fs.existsSync(imagePath)) {
       console.error(`Imagem não encontrada: ${imagePath}`);
@@ -103,6 +104,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
     }
 
     const imageBuffer = fs.readFileSync(imagePath);
+    console.log(`Imagem carregada com sucesso: ${imagePath} (${imageBuffer.length} bytes)`);
 
     paragraphs.push(
       new Paragraph({
@@ -125,7 +127,8 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
             transformation: {
               width: issueImage.width,
               height: issueImage.height,
-            }
+            },
+            type: 'png'
           }),
         ],
       })
@@ -135,8 +138,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   }
 }
 
-// Gerador principal do relatório
-export async function generateInspectionReport(inspection: Inspection): Promise<Blob> {
+function generateInspectionReport(inspection: Inspection): Promise<Blob> {
   const doc = new Document({
     sections: [{
       properties: {
@@ -212,7 +214,6 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
         }),
       },
       children: [
-        // Título
         new Paragraph({
           spacing: { before: 240, after: 240 },
           alignment: AlignmentType.CENTER,
@@ -225,7 +226,6 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
             }),
           ],
         }),
-        // Informações do Cliente
         new Paragraph({
           spacing: { before: 120, after: 120 },
           children: [
@@ -242,7 +242,6 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
             }),
           ],
         }),
-        // Data da Vistoria
         new Paragraph({
           spacing: { before: 120, after: 120 },
           children: [
@@ -259,21 +258,17 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
             }),
           ],
         }),
-        // Detalhes da Inspeção (retained from original but simplified)
         ...generateInitialInfo(inspection),
         ...generateTechnicalSection(inspection),
-        // Conclusão
         ...generateConclusion(inspection),
-        // Assinatura
         ...generateSignatures(inspection),
       ],
     }],
   });
 
-  return await Packer.toBlob(doc);
+  return Packer.toBlob(doc);
 }
 
-// Função auxiliar para calcular área coberta
 function calculateCoveredArea(tileSpec?: { dimensions?: string, count?: string }): string | null {
   if (!tileSpec?.dimensions || !tileSpec?.count) return null;
 
@@ -311,10 +306,8 @@ function getIssueDescription(issue: string): string {
 }
 
 
-// Gerador de informações iniciais (simplified and merged some paragraphs)
 function generateInitialInfo(inspection: Inspection): Paragraph[] {
   return [
-    // Título do Relatório
     new Paragraph({
       spacing: { before: 240, after: 240 },
       alignment: AlignmentType.CENTER,
@@ -327,7 +320,6 @@ function generateInitialInfo(inspection: Inspection): Paragraph[] {
         }),
       ],
     }),
-    // Data e Cliente (combined into single paragraph)
     new Paragraph({
       spacing: { before: 120, after: 120 },
       children: [
@@ -343,7 +335,6 @@ function generateInitialInfo(inspection: Inspection): Paragraph[] {
         }),
       ],
     }),
-    // Empreendimento, Cidade, Endereço, FAR/Protocolo, Assunto (combined and simplified)
     new Paragraph({
       spacing: { before: 120, after: 120 },
       children: [
@@ -376,7 +367,6 @@ function generateInitialInfo(inspection: Inspection): Paragraph[] {
       ],
     }),
 
-    // Elaborado por, Departamento, Unidade, Coordenador Responsável, Gerente Responsável, Regional (combined and simplified)
     new Paragraph({
       spacing: { before: 120, after: 120 },
       children: [
@@ -413,7 +403,6 @@ function generateInitialInfo(inspection: Inspection): Paragraph[] {
       ],
     }),
 
-    // Introdução (simplified)
     new Paragraph({
       spacing: { before: 240, after: 120 },
       children: [
@@ -447,7 +436,6 @@ function generateInitialInfo(inspection: Inspection): Paragraph[] {
         }),
       ],
     }),
-    // Detalhes do Modelo, Quantidade e Modelo, Referência às Normas (combined and simplified)
     new Paragraph({
       spacing: { before: 120, after: 120 },
       alignment: AlignmentType.JUSTIFIED,
@@ -462,10 +450,8 @@ function generateInitialInfo(inspection: Inspection): Paragraph[] {
   ];
 }
 
-// Gerador de seção técnica
 function generateTechnicalSection(inspection: Inspection): Paragraph[] {
   const paragraphs: Paragraph[] = [
-    // Análise Técnica (starts on new page)
     new Paragraph({
       spacing: { before: 240, after: 120 },
       pageBreakBefore: true,
@@ -478,7 +464,6 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
         }),
       ],
     }),
-    // Texto de transição antes da análise
     new Paragraph({
       spacing: { before: 120, after: 240 },
       alignment: AlignmentType.JUSTIFIED,
@@ -494,7 +479,6 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
 
   if (inspection.issues?.length) {
     inspection.issues.forEach((issue) => {
-      // Add issue title and description
       paragraphs.push(
         new Paragraph({
           spacing: { before: 240, after: 60 },
@@ -527,7 +511,6 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
   return paragraphs;
 }
 
-// Gerador de conclusão
 function generateConclusion(inspection: Inspection): Paragraph[] {
   const paragraphs = [
     new Paragraph({
@@ -574,7 +557,6 @@ function generateConclusion(inspection: Inspection): Paragraph[] {
       );
     });
 
-    // Primeiro parágrafo da conclusão
     paragraphs.push(
       new Paragraph({
         spacing: { before: 240, after: 120 },
@@ -589,7 +571,6 @@ function generateConclusion(inspection: Inspection): Paragraph[] {
       })
     );
 
-    // Segundo parágrafo da conclusão
     paragraphs.push(
       new Paragraph({
         spacing: { before: 120, after: 120 },
@@ -604,7 +585,6 @@ function generateConclusion(inspection: Inspection): Paragraph[] {
       })
     );
 
-    // Terceiro parágrafo da conclusão
     paragraphs.push(
       new Paragraph({
         spacing: { before: 120, after: 120 },
@@ -619,7 +599,6 @@ function generateConclusion(inspection: Inspection): Paragraph[] {
       })
     );
 
-    // Quarto parágrafo da conclusão
     paragraphs.push(
       new Paragraph({
         spacing: { before: 120, after: 120 },
@@ -652,10 +631,8 @@ function generateConclusion(inspection: Inspection): Paragraph[] {
   return paragraphs;
 }
 
-// Gerador de assinaturas
 function generateSignatures(inspection: Inspection): Paragraph[] {
   return [
-    // Using flexible spacing to push content to bottom of page
     new Paragraph({
       spacing: { before: 600, after: 240 },
       children: [
@@ -687,7 +664,7 @@ function generateSignatures(inspection: Inspection): Paragraph[] {
       ],
     }),
     new Paragraph({
-      spacing: { before: 120, after: 120 },
+      spacing: { before: 120, after: 120 }, // Corrigido o erro de beforebefore
       children: [
         new TextRun({
           text: "Departamento de Assistência Técnica",
