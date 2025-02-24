@@ -667,7 +667,7 @@ function generateSignatures(inspection: Inspection): Paragraph[] {
       ],
     }),
     new Paragraph({
-      spacing: { before: 120, after:120 },
+      spacing: { before: 120, after: 120 },
       children: [
         new TextRun({
           text: "Departamento de Assistência Técnica",
