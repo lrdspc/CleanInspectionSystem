@@ -97,7 +97,8 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   }
 
   try {
-    const imagePath = path.join('attached_assets', 'images', issueImage.filename);
+    const workspacePath = '/home/runner/workspace';
+    const imagePath = path.join(workspacePath, 'attached_assets', 'images', issueImage.filename);
     console.log(`Tentando carregar imagem: ${imagePath}`);
 
     if (!fs.existsSync(imagePath)) {
@@ -134,6 +135,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
         ],
       })
     );
+    console.log(`Imagem adicionada com sucesso ao relatório: ${issue}`);
   } catch (error) {
     console.error(`Erro ao adicionar imagem para ${issue}:`, error);
   }
