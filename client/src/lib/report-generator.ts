@@ -19,6 +19,22 @@ const FONTS = {
   secondary: "Arial",
 };
 
+// Função auxiliar para criar parágrafos de texto formatado
+function createFormattedParagraph(text: string, options: { bold?: boolean; size?: number; spacing?: { before: number; after: number }; alignment?: AlignmentType } = {}) {
+  return new Paragraph({
+    spacing: options.spacing || { before: 120, after: 120 },
+    alignment: options.alignment || AlignmentType.LEFT,
+    children: [
+      new TextRun({
+        text,
+        font: FONTS.primary,
+        size: options.size || 24,
+        bold: options.bold || false,
+      }),
+    ],
+  });
+}
+
 function calculateCoveredArea(tileSpec?: { dimensions?: string, count?: string }): string | null {
   if (!tileSpec?.dimensions || !tileSpec?.count) return null;
 
@@ -67,35 +83,13 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
             bottom: convertInchesToTwip(1),
             left: convertInchesToTwip(1),
           },
-          size: {
-            orientation: PageOrientation.PORTRAIT,
-          },
         },
       },
       headers: {
         default: new Header({
           children: [
-            new Paragraph({
-              spacing: { before: 0, after: 200 },
-              children: [
-                new TextRun({
-                  text: "SAINT-GOBAIN BRASIL",
-                  font: FONTS.primary,
-                  size: 32,
-                  bold: true,
-                }),
-              ],
-            }),
-            new Paragraph({
-              spacing: { before: 0, after: 200 },
-              children: [
-                new TextRun({
-                  text: "Divisão Brasilit - Assistência Técnica",
-                  font: FONTS.primary,
-                  size: 24,
-                }),
-              ],
-            }),
+            createFormattedParagraph("SAINT-GOBAIN BRASIL", { bold: true, size: 32, spacing: { before: 0, after: 200 } }),
+            createFormattedParagraph("Divisão Brasilit - Assistência Técnica", { size: 24, spacing: { before: 0, after: 200 } }),
           ],
         }),
       },
@@ -105,45 +99,25 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({
-                  text: "Página ",
-                  font: FONTS.primary,
-                  size: 24,
-                }),
-                new TextRun({
-                  children: [PageNumber.CURRENT],
-                  font: FONTS.primary,
-                  size: 24,
-                }),
-                new TextRun({
-                  text: " de ",
-                  font: FONTS.primary,
-                  size: 24,
-                }),
-                new TextRun({
-                  children: [PageNumber.TOTAL_PAGES],
-                  font: FONTS.primary,
-                  size: 24,
-                }),
+                new TextRun({ text: "Página ", font: FONTS.primary, size: 24 }),
+                new TextRun({ children: [PageNumber.CURRENT], font: FONTS.primary, size: 24 }),
+                new TextRun({ text: " de ", font: FONTS.primary, size: 24 }),
+                new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONTS.primary, size: 24 }),
               ],
             }),
           ],
         }),
       },
       children: [
-        // Título e informações do cliente
-        new Paragraph({
+        // Título
+        createFormattedParagraph("RELATÓRIO DE VISTORIA TÉCNICA", {
+          bold: true,
+          size: 32,
           spacing: { before: 240, after: 240 },
           alignment: AlignmentType.CENTER,
-          children: [
-            new TextRun({
-              text: "RELATÓRIO DE VISTORIA TÉCNICA",
-              font: FONTS.primary,
-              size: 32,
-              bold: true,
-            }),
-          ],
         }),
+
+        // Informações do cliente
         new Paragraph({
           spacing: { before: 120, after: 120 },
           children: [
@@ -179,31 +153,19 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
             }),
           ],
         }),
+
         // Análise Técnica
-        new Paragraph({
+        createFormattedParagraph("Análise Técnica", {
+          bold: true,
+          size: 32,
           spacing: { before: 240, after: 120 },
-          pageBreakBefore: true,
-          children: [
-            new TextRun({
-              text: "Análise Técnica",
-              font: FONTS.primary,
-              size: 32,
-              bold: true,
-            }),
-          ],
         }),
+
         // Problemas identificados
         ...(inspection.issues || []).map((issue, index) => [
-          new Paragraph({
+          createFormattedParagraph(`${index + 1}. ${issue}`, {
+            bold: true,
             spacing: { before: 120, after: 60 },
-            children: [
-              new TextRun({
-                text: `${index + 1}. ${issue}`,
-                font: FONTS.primary,
-                size: 24,
-                bold: true,
-              }),
-            ],
           }),
           new Paragraph({
             spacing: { before: 60, after: 120 },
@@ -217,19 +179,14 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
             ],
           }),
         ]).flat(),
+
         // Conclusão
-        new Paragraph({
+        createFormattedParagraph("Conclusão", {
+          bold: true,
+          size: 32,
           spacing: { before: 240, after: 120 },
-          pageBreakBefore: true,
-          children: [
-            new TextRun({
-              text: "Conclusão",
-              font: FONTS.primary,
-              size: 32,
-              bold: true,
-            }),
-          ],
         }),
+
         new Paragraph({
           spacing: { before: 120, after: 120 },
           alignment: AlignmentType.JUSTIFIED,
@@ -243,6 +200,7 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
             }),
           ],
         }),
+
         // Assinatura
         new Paragraph({
           spacing: { before: 360, after: 120 },
