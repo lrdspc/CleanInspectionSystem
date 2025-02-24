@@ -8,7 +8,6 @@ import {
   Header,
   Footer,
   SectionType,
-  PageOrientation,
   PageNumber,
   convertInchesToTwip,
 } from "docx";
@@ -88,8 +87,8 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
       headers: {
         default: new Header({
           children: [
-            createFormattedParagraph("SAINT-GOBAIN BRASIL", { bold: true, size: 32, spacing: { before: 0, after: 200 } }),
-            createFormattedParagraph("Divisão Brasilit - Assistência Técnica", { size: 24, spacing: { before: 0, after: 200 } }),
+            createFormattedParagraph("SAINT-GOBAIN BRASIL", { bold: true, size: 32, spacing: { before: 0, after: 120 } }),
+            createFormattedParagraph("Divisão Brasilit - Assistência Técnica", { size: 24, spacing: { before: 0, after: 120 } }),
           ],
         }),
       },
@@ -122,13 +121,7 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
           spacing: { before: 120, after: 120 },
           children: [
             new TextRun({
-              text: `Protocolo: ${inspection.protocolNumber}\n`,
-              font: FONTS.primary,
-              size: 24,
-              bold: true,
-            }),
-            new TextRun({
-              text: `Data da Vistoria: ${inspection.dateInspected ? format(new Date(inspection.dateInspected), 'dd/MM/yyyy') : ""}\n\n`,
+              text: `Data da vistoria: ${inspection.dateInspected ? format(new Date(inspection.dateInspected), 'dd/MM/yyyy') : ""}\n`,
               font: FONTS.primary,
               size: 24,
             }),
@@ -138,7 +131,7 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
               size: 24,
             }),
             new TextRun({
-              text: `Tipo de Construção: ${inspection.constructionType}\n`,
+              text: `Empreendimento: ${inspection.constructionType}\n`,
               font: FONTS.primary,
               size: 24,
             }),
@@ -148,12 +141,22 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
               size: 24,
             }),
             new TextRun({
-              text: `Endereço: ${inspection.address}\n\n`,
+              text: `Endereço: ${inspection.address}\n`,
               font: FONTS.primary,
               size: 24,
             }),
             new TextRun({
-              text: `Técnico Responsável: ${inspection.technicianName}\n`,
+              text: `FAR/Protocolo: ${inspection.protocolNumber}\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: `Assunto: ${inspection.subject}\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: `Elaborado por: ${inspection.technicianName}\n`,
               font: FONTS.primary,
               size: 24,
             }),
@@ -168,17 +171,17 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
               size: 24,
             }),
             new TextRun({
+              text: `Coordenador Responsável: ${inspection.coordinator}\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: `Gerente Responsável: ${inspection.manager}\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
               text: `Regional: ${inspection.region}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Coordenador: ${inspection.coordinator}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Gerente: ${inspection.manager}\n\n`,
               font: FONTS.primary,
               size: 24,
             }),
@@ -186,23 +189,32 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
         }),
 
         // Introdução
+        createFormattedParagraph("Introdução", {
+          bold: true,
+          size: 32,
+          spacing: { before: 240, after: 120 },
+        }),
+
         new Paragraph({
           spacing: { before: 120, after: 120 },
           alignment: AlignmentType.JUSTIFIED,
           children: [
             new TextRun({
-              text: "Em atendimento à solicitação do cliente, realizamos vistoria técnica para avaliar as condições de instalação e conservação das telhas BRASILIT. A inspeção foi conduzida seguindo rigorosamente as normas técnicas e recomendações do fabricante, visando identificar possíveis não conformidades que possam comprometer o desempenho do sistema de cobertura.\n\n",
+              text: "A Área de Assistência Técnica foi solicitada para atender uma reclamação relacionada ao surgimento de infiltrações nas telhas de fibrocimento - Telha da marca BRASILIT modelo ONDULADA de 5mm, produzidas com tecnologia CRFS - Cimento Reforçado com Fios Sintéticos - 100% sem amianto - cuja fabricação segue a norma ABNT NBR-15210-1 e NBR-15210-2, bem como as normas técnicas da ABNT: NBR-15210-1 e NBR-15210-3.\n\n",
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: "Em atenção à vossa solicitação, analisamos as evidências encontradas, para avaliar as manifestações patológicas reclamadas nas telhas da nossa aplicada em sua cobertura conforme registro de reclamação.\n\n",
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: "O modelo de telha escolhido para o qual foi feita a especificação de projeto, bem como os demais, possui a necessidade de seguir rigorosamente as orientações técnicas de armazenagem, manuseio e principalmente instalação, que são condições mandatórias para que o produto cumpra por mais de anos sua finalidade como sistema completo.\n",
               font: FONTS.primary,
               size: 24,
             }),
           ],
-        }),
-
-        // Análise Técnica
-        createFormattedParagraph("Análise Técnica", {
-          bold: true,
-          size: 32,
-          spacing: { before: 240, after: 120 },
         }),
 
         // Especificações das Telhas (se houver)
@@ -252,66 +264,51 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
           pageBreakBefore: true,
         }),
 
+        // Lista das não conformidades
+        ...(inspection.issues && inspection.issues.length > 0 ? [
+          createFormattedParagraph("Com base na análise técnica realizada, foram identificadas as seguintes não conformidades:", {
+            spacing: { before: 120, after: 120 },
+          }),
+          ...inspection.issues.map((issue, index) =>
+            createFormattedParagraph(`${index + 1}. ${issue}`, {
+              spacing: { before: 60, after: 60 },
+            })
+          ),
+        ] : []),
+
+        // Texto da conclusão
         new Paragraph({
           spacing: { before: 120, after: 120 },
           alignment: AlignmentType.JUSTIFIED,
           children: [
             new TextRun({
               text: inspection.issues && inspection.issues.length > 0
-                ? "Em função das não conformidades constatadas no manuseio e instalação das chapas Brasilit, finalizamos o atendimento considerando a reclamação como IMPROCEDENTE, onde os problemas reclamados se dão pelo incorreto manuseio e instalação das telhas e não a problemas relacionados à qualidade do material. Ressaltamos que a correção das não conformidades identificadas é fundamental para garantir o desempenho adequado do sistema de cobertura e a segurança dos usuários.\n\nRecomendamos que todas as adequações sejam realizadas por profissionais qualificados, seguindo rigorosamente as orientações técnicas do fabricante. A Saint-Gobain Brasilit se coloca à disposição para eventuais esclarecimentos adicionais através de nossos canais de atendimento."
-                : "Após minuciosa análise técnica, não foram identificadas não conformidades significativas no sistema de cobertura. As telhas BRASILIT e sua instalação atendem às especificações técnicas e recomendações do fabricante, garantindo o desempenho adequado do produto. A Saint-Gobain Brasilit agradece a confiança e se mantém à disposição através de nossos canais de atendimento para quaisquer esclarecimentos adicionais que se façam necessários.",
+                ? "Em função das não conformidades constatadas no manuseio e instalação das chapas Brasilit, finalizamos o atendimento considerando a reclamação como IMPROCEDENTE, onde os problemas reclamados se dão pelo incorreto manuseio e instalação das telhas e não a problemas relacionados à qualidade do material. Esta guia técnica está sempre disponível em www.brasilit.com.br.\n\nOs produtos da marca Brasilit atendem as Normas da Associação Brasileira de Normas Técnicas - ABNT, específicas para cada linha de produto, e cumprem as exigências para garantia do produto."
+                : "Após minuciosa análise técnica, não foram identificadas não conformidades significativas no sistema de cobertura. As telhas BRASILIT e sua instalação atendem às especificações técnicas e recomendações do fabricante.",
               font: FONTS.primary,
               size: 24,
             }),
           ],
         }),
 
-        // Assinatura
-        new Paragraph({
-          spacing: { before: 360, after: 120 },
-          children: [
-            new TextRun({
-              text: "Atenciosamente,\n\n",
-              font: FONTS.primary,
-              size: 24,
-            }),
-          ],
-        }),
-        new Paragraph({
+        createFormattedParagraph("Desde já agradecemos e nos colocamos à disposição para quaisquer esclarecimento adicional.", {
           spacing: { before: 120, after: 120 },
-          children: [
-            new TextRun({
-              text: `${inspection.technicianName}\n`,
-              font: FONTS.primary,
-              size: 24,
-              bold: true,
-            }),
-            new TextRun({
-              text: "Assistência Técnica\n",
-              font: FONTS.primary,
-              size: 24,
-            }),
-          ],
         }),
-        new Paragraph({
-          spacing: { before: 120, after: 120 },
-          children: [
-            new TextRun({
-              text: "Saint-Gobain do Brasil Produtos Industriais e para Construção Ltda.\n",
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: "Divisão Produtos Para Construção\n",
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: "Departamento de Assistência Técnica",
-              font: FONTS.primary,
-              size: 24,
-            }),
-          ],
+
+        createFormattedParagraph("Atenciosamente,", {
+          spacing: { before: 240, after: 120 },
+        }),
+
+        createFormattedParagraph("Saint-Gobain do Brasil Prod. Ind. e para Cons. Civil Ltda.", {
+          spacing: { before: 120, after: 60 },
+        }),
+
+        createFormattedParagraph("Divisão Produtos Para Construção", {
+          spacing: { before: 60, after: 60 },
+        }),
+
+        createFormattedParagraph("Departamento de Assistência Técnica", {
+          spacing: { before: 60, after: 60 },
         }),
       ],
     }],
