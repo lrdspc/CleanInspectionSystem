@@ -11,12 +11,10 @@ import {
   PageOrientation,
   PageNumber,
   convertInchesToTwip,
+  ImageRun,
 } from "docx";
-
-const FONTS = {
-  primary: "Arial",
-  secondary: "Arial",
-};
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Simplified Inspection type with only the necessary fields
 interface Inspection {
@@ -41,6 +39,30 @@ interface Inspection {
   }>;
   issues?: string[];
 }
+
+// Add interface for issue images
+interface IssueImage {
+  path: string;
+  caption: string;
+  width: number;
+  height: number;
+}
+
+const FONTS = {
+  primary: "Arial",
+  secondary: "Arial",
+};
+
+// Add mapping for issue images
+const ISSUE_IMAGES: Record<string, IssueImage> = {
+  "Corte de Canto Incorreto ou Ausente": {
+    path: path.join(__dirname, "images", "corte-canto-incorreto.png"),
+    caption: "Exemplo de corte de canto incorreto em telha Brasilit",
+    width: 400,
+    height: 300
+  },
+  // Add more mappings as images become available
+};
 
 // Gerador principal do relatório
 export async function generateInspectionReport(inspection: Inspection): Promise<Blob> {
@@ -250,7 +272,7 @@ function generateInitialInfo(inspection: Inspection): Paragraph[] {
         }),
       ],
     }),
-      // Empreendimento, Cidade, Endereço, FAR/Protocolo, Assunto (combined and simplified)
+    // Empreendimento, Cidade, Endereço, FAR/Protocolo, Assunto (combined and simplified)
     new Paragraph({
       spacing: { before: 120, after: 120 },
       children: [
@@ -354,7 +376,7 @@ function generateInitialInfo(inspection: Inspection): Paragraph[] {
         }),
       ],
     }),
-      // Detalhes do Modelo, Quantidade e Modelo, Referência às Normas (combined and simplified)
+    // Detalhes do Modelo, Quantidade e Modelo, Referência às Normas (combined and simplified)
     new Paragraph({
       spacing: { before: 120, after: 120 },
       alignment: AlignmentType.JUSTIFIED,
@@ -402,9 +424,10 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
 
   if (inspection.issues?.length) {
     inspection.issues.forEach((issue, index) => {
+      // Add issue title and description
       paragraphs.push(
         new Paragraph({
-          spacing: { before: 240, after: 60 },  // Increased spacing before each issue
+          spacing: { before: 240, after: 60 },
           children: [
             new TextRun({
               text: `${index + 1}. ${issue}`,
@@ -415,7 +438,7 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
           ],
         }),
         new Paragraph({
-          spacing: { before: 60, after: 240 },  // Increased spacing after issue description
+          spacing: { before: 60, after: 120 },
           alignment: AlignmentType.JUSTIFIED,
           children: [
             new TextRun({
@@ -426,6 +449,39 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
           ],
         })
       );
+
+      // Add image if available for this issue
+      const issueImage = ISSUE_IMAGES[issue];
+      if (issueImage && fs.existsSync(issueImage.path)) {
+        const imageBuffer = fs.readFileSync(issueImage.path);
+        paragraphs.push(
+          new Paragraph({
+            spacing: { before: 120, after: 60 },
+            alignment: AlignmentType.CENTER,
+            children: [
+              new ImageRun({
+                data: imageBuffer,
+                transformation: {
+                  width: issueImage.width,
+                  height: issueImage.height,
+                },
+              }),
+            ],
+          }),
+          new Paragraph({
+            spacing: { before: 60, after: 240 },
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: issueImage.caption,
+                font: FONTS.primary,
+                size: 20,
+                italics: true,
+              }),
+            ],
+          })
+        );
+      }
     });
   }
 
