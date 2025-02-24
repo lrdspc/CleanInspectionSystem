@@ -356,7 +356,7 @@ export default function InspectionForm() {
                 </div>
                 <div className="w-1/2 bg-white shadow-lg rounded-lg p-4">
                   <h2 className="text-lg font-bold mb-4">Preview do Relatório</h2>
-                  <ReportPreview formData={form.getValues()} />
+                  <ReportPreview formData={form.watch()} />
                 </div>
               </div>
             </form>
