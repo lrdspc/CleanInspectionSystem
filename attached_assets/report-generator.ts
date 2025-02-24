@@ -84,15 +84,15 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
 
   try {
     const basePath = process.cwd();
-    const imagePath = path.join(basePath, 'client', 'public', 'images', issueImage.filename);
+    const imagePath = path.join(basePath, 'attached_assets', 'images', issueImage.filename);
     
     if (!fs.existsSync(imagePath)) {
       console.error(`Imagem não encontrada: ${imagePath}`);
       return;
     }
 
-    let imagePath = null;
-    for (const testPath of possiblePaths) {
+    const imageBuffer = fs.readFileSync(imagePath);
+    console.log(`Imagem carregada com sucesso: ${imagePath} (${imageBuffer.length} bytes)`);
       if (fs.existsSync(testPath)) {
         imagePath = testPath;
         break;
