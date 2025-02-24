@@ -138,20 +138,35 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
           spacing: { before: 360, after: 240 },
         }),
 
+        // Parágrafos da introdução em seções separadas com alinhamento justificado
         new Paragraph({
           spacing: { before: 240, after: 240 },
           alignment: AlignmentType.JUSTIFIED,
           children: [
             new TextRun({
-              text: "A Área de Assistência Técnica foi solicitada para atender uma reclamação relacionada ao surgimento de infiltrações nas telhas de fibrocimento - Telha da marca BRASILIT modelo ONDULADA de 5mm, produzidas com tecnologia CRFS - Cimento Reforçado com Fios Sintéticos - 100% sem amianto - cuja fabricação segue a norma ABNT NBR-15210-1 e NBR-15210-2, bem como as normas técnicas da ABNT: NBR-15210-1 e NBR-15210-3.\n\n",
+              text: "A Área de Assistência Técnica foi solicitada para atender uma reclamação relacionada ao surgimento de infiltrações nas telhas de fibrocimento - Telha da marca BRASILIT modelo ONDULADA de 5mm, produzidas com tecnologia CRFS - Cimento Reforçado com Fios Sintéticos - 100% sem amianto - cuja fabricação segue a norma ABNT NBR-15210-1 e NBR-15210-2, bem como as normas técnicas da ABNT: NBR-15210-1 e NBR-15210-3.",
               font: FONTS.primary,
               size: 24,
             }),
+          ],
+        }),
+
+        new Paragraph({
+          spacing: { before: 240, after: 240 },
+          alignment: AlignmentType.JUSTIFIED,
+          children: [
             new TextRun({
-              text: "Em atenção à vossa solicitação, analisamos as evidências encontradas, para avaliar as manifestações patológicas reclamadas nas telhas da nossa marca aplicada em sua cobertura conforme registro de reclamação.\n\n",
+              text: "Em atenção à vossa solicitação, analisamos as evidências encontradas, para avaliar as manifestações patológicas reclamadas nas telhas da nossa marca aplicada em sua cobertura conforme registro de reclamação.",
               font: FONTS.primary,
               size: 24,
             }),
+          ],
+        }),
+
+        new Paragraph({
+          spacing: { before: 240, after: 240 },
+          alignment: AlignmentType.JUSTIFIED,
+          children: [
             new TextRun({
               text: "O modelo de telha escolhido para qual foi feita a especificação de projeto, bem como os demais, possui a necessidade de seguir rigorosamente as orientações técnicas de armazenagem, manuseio e principalmente instalação, que são condições mandatórias para que o produto cumpra por mais de anos sua finalidade como sistema completo.",
               font: FONTS.primary,
