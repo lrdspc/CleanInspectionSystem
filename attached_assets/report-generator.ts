@@ -83,22 +83,31 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   }
 
   try {
-    try {
-      const basePath = process.cwd();
-      let imagePath = path.join(basePath, 'attached_assets', 'images', issueImage.filename);
-      
-      // Tenta diferentes caminhos caso o primeiro não funcione
-      if (!fs.existsSync(imagePath)) {
-        imagePath = path.join(basePath, 'client', 'public', 'images', issueImage.filename);
-      }
-      
-      if (!fs.existsSync(imagePath)) {
-        console.error(`Imagem não encontrada em nenhum caminho: ${issueImage.filename}`);
-        return;
-      }
+    const basePath = process.cwd();
+    // Tenta todos os caminhos possíveis onde a imagem pode estar
+    const possiblePaths = [
+      path.join(basePath, 'attached_assets', 'images', issueImage.filename),
+      path.join(basePath, 'client', 'public', 'images', issueImage.filename),
+      path.join(basePath, 'images', issueImage.filename),
+      path.join(basePath, 'public', 'images', issueImage.filename)
+    ];
 
-      const imageBuffer = fs.readFileSync(imagePath);
-      console.log(`Imagem carregada com sucesso: ${imagePath} (${imageBuffer.length} bytes)`);
+    let imagePath = null;
+    for (const testPath of possiblePaths) {
+      if (fs.existsSync(testPath)) {
+        imagePath = testPath;
+        break;
+      }
+    }
+
+    if (!imagePath) {
+      console.error(`Imagem não encontrada em nenhum caminho para: ${issueImage.filename}`);
+      console.error('Caminhos verificados:', possiblePaths);
+      return;
+    }
+
+    const imageBuffer = fs.readFileSync(imagePath);
+    console.log(`Imagem carregada com sucesso: ${imagePath} (${imageBuffer.length} bytes)`);
 
     // Adiciona a legenda antes da imagem
     paragraphs.push(
