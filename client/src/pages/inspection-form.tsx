@@ -78,19 +78,27 @@ export default function InspectionForm() {
 
   const mutation = useMutation({
     mutationFn: async (data: InsertInspection) => {
-      const res = await apiRequest("POST", "/api/inspections", data);
-      const inspection = await res.json();
+      try {
+        const res = await apiRequest("POST", "/api/inspections", data);
+        if (!res.ok) {
+          throw new Error('Failed to save inspection');
+        }
+        const inspection = await res.json();
 
-      // Generate report
-      const reportBlob = await generateInspectionReport(inspection);
-      const url = URL.createObjectURL(reportBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `relatorio-${inspection.protocolNumber}.docx`;
-      a.click();
-      URL.revokeObjectURL(url);
+        // Generate report
+        const reportBlob = await generateInspectionReport(inspection);
+        const url = URL.createObjectURL(reportBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `relatorio-${inspection.protocolNumber}.docx`;
+        a.click();
+        URL.revokeObjectURL(url);
 
-      return inspection;
+        return inspection;
+      } catch (error) {
+        console.error('Error in mutation:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/inspections'] });
@@ -99,6 +107,13 @@ export default function InspectionForm() {
         description: "O relatório foi gerado e baixado automaticamente."
       });
       navigate("/");
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro ao criar inspeção",
+        description: "Ocorreu um erro ao tentar criar a inspeção. Tente novamente.",
+        variant: "destructive"
+      });
     }
   });
 
