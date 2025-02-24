@@ -636,7 +636,7 @@ function generateConclusion(inspection: Inspection): Paragraph[] {
         alignment: AlignmentType.JUSTIFIED,
         children: [
           new TextRun({
-            text: "Ratificamos que os produtos Brasilit atendem as Normas da Associação Brasileira de Normas Técnicas — ABNT, específicas para cada linha de produto, e cumprimos as exigências legais de garantia de produtos conforme a legislação em vigor.",
+            text: "Ratificamos que os produtos Brasilit atendem as Normas da Associação Brasileira de Normas Técnicas —ABNT, específicas para cada linha de produto, e cumprimos as exigências legais de garantia de produtos conforme a legislação em vigor.",
             font: FONTS.primary,
             size: 24,
           }),
