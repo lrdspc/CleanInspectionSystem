@@ -83,8 +83,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   }
 
   try {
-    const workspacePath = process.cwd();
-    const imagePath = path.join(workspacePath, 'attached_assets', 'images', issueImage.filename);
+    const imagePath = path.join('attached_assets', 'images', issueImage.filename);
     console.log(`Tentando carregar imagem: ${imagePath}`);
 
     if (!fs.existsSync(imagePath)) {
@@ -110,7 +109,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
       })
     );
 
-    // Adiciona a imagem com configurações específicas para DOCX
+    // Adiciona a imagem com configurações otimizadas para DOCX
     paragraphs.push(
       new Paragraph({
         spacing: { before: 60, after: 240 },
@@ -120,18 +119,20 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
             data: imageBuffer,
             transformation: {
               width: 400,
-              height: 300,
+              height: 300
             },
             floating: {
               horizontalPosition: {
-                offset: 0,
+                relative: "margin",
+                offset: 0
               },
               verticalPosition: {
-                offset: 0,
-              },
-            },
-          }),
-        ],
+                relative: "paragraph",
+                offset: 0
+              }
+            }
+          })
+        ]
       })
     );
 
@@ -678,4 +679,3 @@ function generateSignatures(inspection: Inspection): Paragraph[] {
     }),
   ];
 }
-</replit```javascript
