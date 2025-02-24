@@ -1,42 +1,40 @@
 
 import React from 'react';
-import { format } from 'date-fns';
+import { InsertInspection } from '@/shared/schema';
 
 interface ReportPreviewProps {
-  formData: any;
+  formData: Partial<InsertInspection>;
 }
 
 export function ReportPreview({ formData }: ReportPreviewProps) {
   return (
-    <div className="bg-white p-8 font-serif">
-      <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold">SAINT-GOBAIN BRASIL</h1>
-        <h2 className="text-xl">Divisão Brasilit - Assistência Técnica</h2>
-      </div>
-      
-      <div className="mb-8">
-        <h3 className="text-xl font-bold mb-4">RELATÓRIO DE VISTORIA TÉCNICA</h3>
-        <p>Data da vistoria: {formData.dateInspected ? format(new Date(formData.dateInspected), 'dd/MM/yyyy') : ''}</p>
-        <p>Cliente: {formData.clientName}</p>
-        <p>Empreendimento: {formData.constructionType}</p>
-        <p>Cidade: {formData.city}</p>
-        <p>Endereço: {formData.address}</p>
-        <p>Protocolo: {formData.protocolNumber}</p>
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Dados Básicos</h3>
+      <div>
+        <p><strong>Cliente:</strong> {formData.clientName}</p>
+        <p><strong>Data da Vistoria:</strong> {formData.dateInspected}</p>
+        <p><strong>Tipo de Construção:</strong> {formData.constructionType}</p>
+        <p><strong>Cidade:</strong> {formData.city}</p>
+        <p><strong>Endereço:</strong> {formData.address}</p>
       </div>
 
-      <div className="mb-8">
-        <h4 className="text-lg font-bold mb-2">Problemas Identificados:</h4>
-        <ul className="list-disc pl-4">
-          {formData.selectedIssues?.map((issue: string) => (
-            <li key={issue}>{issue}</li>
-          ))}
-        </ul>
+      <h3 className="text-lg font-semibold mt-4">Especificações Técnicas</h3>
+      <div>
+        {formData.tileSpecs?.map((spec, index) => (
+          <div key={index} className="mb-2">
+            <p><strong>Modelo:</strong> {spec.model}</p>
+            <p><strong>Espessura:</strong> {spec.thickness}</p>
+            <p><strong>Dimensões:</strong> {spec.dimensions}</p>
+            <p><strong>Quantidade:</strong> {spec.count}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="mb-8">
-        <p>Elaborado por: {formData.technicianName}</p>
-        <p>Departamento: {formData.department}</p>
-        <p>Unidade: {formData.unit}</p>
+      <h3 className="text-lg font-semibold mt-4">Problemas Identificados</h3>
+      <div>
+        {formData.issues?.map((issue, index) => (
+          <p key={index}>• {issue}</p>
+        ))}
       </div>
     </div>
   );
