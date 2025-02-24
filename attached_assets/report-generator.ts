@@ -83,17 +83,22 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   }
 
   try {
-    const basePath = process.cwd();
-    const imagePath = path.join(basePath, 'attached_assets', 'images', issueImage.filename);
-    console.log(`Tentando carregar imagem: ${imagePath}`);
+    try {
+      const basePath = process.cwd();
+      let imagePath = path.join(basePath, 'attached_assets', 'images', issueImage.filename);
+      
+      // Tenta diferentes caminhos caso o primeiro não funcione
+      if (!fs.existsSync(imagePath)) {
+        imagePath = path.join(basePath, 'client', 'public', 'images', issueImage.filename);
+      }
+      
+      if (!fs.existsSync(imagePath)) {
+        console.error(`Imagem não encontrada em nenhum caminho: ${issueImage.filename}`);
+        return;
+      }
 
-    if (!fs.existsSync(imagePath)) {
-      console.error(`Imagem não encontrada: ${imagePath}`);
-      return;
-    }
-
-    const imageBuffer = fs.readFileSync(imagePath);
-    console.log(`Imagem carregada com sucesso: ${imagePath} (${imageBuffer.length} bytes)`);
+      const imageBuffer = fs.readFileSync(imagePath);
+      console.log(`Imagem carregada com sucesso: ${imagePath} (${imageBuffer.length} bytes)`);
 
     // Adiciona a legenda antes da imagem
     paragraphs.push(
