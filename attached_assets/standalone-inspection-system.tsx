@@ -2,19 +2,8 @@ import React, { useState, useRef } from "react";
 import { z } from "zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import {
-  Document,
-  Paragraph,
-  TextRun,
-  Packer,
-  AlignmentType,
-  Header,
-  Footer,
-  SectionType,
-  PageOrientation,
-  PageNumber,
-  convertInchesToTwip,
-} from "docx";
+import { jsPDF } from "jspdf";
+import html2canvas from 'html2canvas';
 
 // Constants moved to top for better organization
 const CONSTRUCTION_TYPES = ["Residencial", "Comercial", "Industrial", "Outro"];
@@ -89,6 +78,16 @@ const ISSUE_DESCRIPTIONS = {
     "A análise técnica identificou que os acessórios complementares (rufos, calhas, pingadeiras, etc.) não estão fixados de acordo com as especificações técnicas do fabricante. A fixação adequada destes elementos é crucial para o desempenho do sistema de cobertura. Os rufos devem ser fixados à estrutura e nunca diretamente nas telhas, com sobreposição mínima de 5cm sobre as telhas e vedação apropriada. As calhas devem ter dimensionamento adequado, inclinação mínima de 0,5% e estar corretamente fixadas à estrutura. O espaçamento entre os suportes deve seguir as especificações do fabricante. A fixação inadequada pode resultar em infiltrações, transbordamentos, oxidação da estrutura e danos ao sistema de cobertura. É necessária a revisão completa da fixação dos acessórios complementares, seguindo rigorosamente as recomendações técnicas.",
 };
 
+const ISSUE_IMAGES = {
+  "Armazenagem Incorreta": "/attached_assets/images/armazenagem-incorreta.png",
+  "Carga Permanente sobre as Telhas": "/attached_assets/images/carga-permanente.png",
+  "Corte de Canto Incorreto ou Ausente": "/attached_assets/images/corte-canto-incorreto.png",
+  "Fixação Irregular das Telhas": "/attached_assets/images/fixacao-irregular.png",
+  "Inclinação da Telha Inferior ao Recomendado": "/attached_assets/images/inclinacao-incorreta.png",
+  "Marcas de Caminhamento sobre o Telhado": "/attached_assets/images/marca-caminhamento.png",
+  "Balanço Livre do Beiral Incorreto": "/attached_assets/images/balanco-incorreto.png"
+};
+
 export function InspectionSystem() {
   const [formData, setFormData] = useState<FormData>({
     clientName: "",
@@ -113,6 +112,8 @@ export function InspectionSystem() {
     selectedIssues: [],
   });
 
+  const reportRef = useRef<HTMLDivElement>(null);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -131,148 +132,31 @@ export function InspectionSystem() {
   };
 
   const generateReport = async () => {
-    const doc = new Document({
-      sections: [{
-        properties: {
-          type: SectionType.CONTINUOUS,
-          page: {
-            margin: {
-              top: convertInchesToTwip(1),
-              right: convertInchesToTwip(1),
-              bottom: convertInchesToTwip(1),
-              left: convertInchesToTwip(1),
-            },
-            size: {
-              orientation: PageOrientation.PORTRAIT,
-            },
-          },
-        },
-        headers: {
-          default: new Header({
-            children: [
-              new Paragraph({
-                spacing: { before: 0, after: 200 },
-                children: [new TextRun({ text: "SAINT-GOBAIN BRASIL", size: 32, bold: true })],
-              }),
-              new Paragraph({
-                spacing: { before: 0, after: 200 },
-                children: [new TextRun({ text: "Divisão Brasilit - Assistência Técnica", size: 24 })],
-              }),
-            ],
-          }),
-        },
-        footers: {
-          default: new Footer({
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [
-                  new TextRun({ text: "Página ", size: 24 }),
-                  new TextRun({ children: [PageNumber.CURRENT], size: 24 }),
-                  new TextRun({ text: " de ", size: 24 }),
-                  new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 24 }),
-                ],
-              }),
-            ],
-          }),
-        },
-        children: [
-          // Initial content
-          new Paragraph({
-            spacing: { before: 240, after: 240 },
-            alignment: AlignmentType.CENTER,
-            children: [new TextRun({ text: "RELATÓRIO DE VISTORIA TÉCNICA", size: 32, bold: true })],
-          }),
-          // Client info
-          new Paragraph({
-            spacing: { before: 120, after: 120 },
-            children: [
-              new TextRun({ text: "Cliente: ", size: 24, bold: true }),
-              new TextRun({ text: formData.clientName, size: 24 }),
-            ],
-          }),
-          // Inspection date
-          new Paragraph({
-            spacing: { before: 120, after: 120 },
-            children: [
-              new TextRun({ text: "Data da Vistoria: ", size: 24, bold: true }),
-              new TextRun({
-                text: format(new Date(formData.dateInspected), "dd/MM/yyyy"),
-                size: 24,
-              }),
-            ],
-          }),
-          // Issues section
-          ...formData.selectedIssues.map((issue, index) => [
-            new Paragraph({
-              spacing: { before: 120, after: 60 },
-              children: [
-                new TextRun({
-                  text: `${index + 1}. ${issue}`,
-                  size: 24,
-                  bold: true,
-                }),
-              ],
-            }),
-            new Paragraph({
-              spacing: { before: 60, after: 120 },
-              alignment: AlignmentType.JUSTIFIED,
-              children: [
-                new TextRun({
-                  text: ISSUE_DESCRIPTIONS[issue] || "",
-                  size: 24,
-                }),
-              ],
-            }),
-          ]).flat(),
-          // Conclusion
-          new Paragraph({
-            spacing: { before: 360, after: 240 },
-            pageBreakBefore: true,
-            children: [new TextRun({ text: "Conclusão", size: 32, bold: true })],
-          }),
-          new Paragraph({
-            spacing: { before: 120, after: 120 },
-            alignment: AlignmentType.JUSTIFIED,
-            children: [
-              new TextRun({
-                text: formData.selectedIssues.length > 0
-                  ? "Em função das não conformidades constatadas no manuseio e instalação das chapas Brasilit, finalizamos o atendimento considerando a reclamação como IMPROCEDENTE, onde os problemas reclamados se dão pelo incorreto manuseio e instalação das telhas e não a problemas relacionados à qualidade do material."
-                  : "A análise técnica não identificou não conformidades significativas. As telhas e sua instalação atendem às especificações técnicas e recomendações do fabricante.",
-                size: 24,
-              }),
-            ],
-          }),
-          new Paragraph({
-            spacing: { before: 600, after: 120 },
-            children: [
-              new TextRun({ text: "Atenciosamente,", size: 24 }),
-            ],
-          }),
-          new Paragraph({
-            spacing: { before: 120, after: 120 },
-            children: [
-              new TextRun({
-                text: "Saint-Gobain do Brasil Prod. Ind. e para Cons. Civil Ltda.",
-                size: 24,
-              }),
-            ],
-          }),
-        ],
-      }],
-    });
+    if (!reportRef.current) return;
 
-    const blob = await Packer.toBlob(doc);
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `relatorio-${format(new Date(), "yyyy-MM-dd")}.docx`;
-    a.click();
+    try {
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: true
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`relatorio-${format(new Date(), "yyyy-MM-dd")}.pdf`);
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
+        {/* Form Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
           <h1 className="text-2xl font-bold mb-6">Formulário de Inspeção</h1>
 
@@ -339,6 +223,67 @@ export function InspectionSystem() {
               Gerar Relatório
             </button>
           </form>
+        </div>
+
+        {/* Hidden Report Template */}
+        <div ref={reportRef} className="hidden">
+          <div className="bg-white p-8" style={{ width: '210mm', minHeight: '297mm' }}>
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold">SAINT-GOBAIN BRASIL</h1>
+              <h2 className="text-xl">Divisão Brasilit - Assistência Técnica</h2>
+            </div>
+
+            {/* Title */}
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-bold">RELATÓRIO DE VISTORIA TÉCNICA</h1>
+            </div>
+
+            {/* Client Info */}
+            <div className="mb-8">
+              <p><strong>Cliente:</strong> {formData.clientName}</p>
+              <p><strong>Data da Vistoria:</strong> {format(new Date(formData.dateInspected), "dd/MM/yyyy")}</p>
+            </div>
+
+            {/* Issues */}
+            <div className="mb-8">
+              {formData.selectedIssues.map((issue, index) => (
+                <div key={issue} className="mb-6">
+                  <h3 className="text-xl font-bold mb-2">{`${index + 1}. ${issue}`}</h3>
+                  <p className="mb-4">{ISSUE_DESCRIPTIONS[issue]}</p>
+                  {ISSUE_IMAGES[issue] && (
+                    <div className="mb-4">
+                      <img 
+                        src={ISSUE_IMAGES[issue]} 
+                        alt={`Exemplo de ${issue}`}
+                        className="max-w-full h-auto"
+                        crossOrigin="anonymous"
+                      />
+                      <p className="text-sm text-gray-600 mt-1 italic">
+                        Exemplo ilustrativo de {issue.toLowerCase()}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Conclusion */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4">Conclusão</h2>
+              <p className="text-justify">
+                {formData.selectedIssues.length > 0
+                  ? "Em função das não conformidades constatadas no manuseio e instalação das chapas Brasilit, finalizamos o atendimento considerando a reclamação como IMPROCEDENTE, onde os problemas reclamados se dão pelo incorreto manuseio e instalação das telhas e não a problemas relacionados à qualidade do material."
+                  : "A análise técnica não identificou não conformidades significativas. As telhas e sua instalação atendem às especificações técnicas e recomendações do fabricante."}
+              </p>
+            </div>
+
+            {/* Signature */}
+            <div className="mt-16">
+              <p>Atenciosamente,</p>
+              <p className="mt-4">Saint-Gobain do Brasil Prod. Ind. e para Cons. Civil Ltda.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
