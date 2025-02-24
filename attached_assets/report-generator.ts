@@ -114,8 +114,10 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   if (!issueImage) return;
 
   try {
-    const imagePath = path.join(__dirname, 'images', path.basename(issueImage.path));
+    const imagePath = path.join(__dirname, path.basename(issueImage.path));
     console.log(`Tentando carregar imagem de: ${imagePath}`);
+    console.log(`Diretório atual: ${__dirname}`);
+    console.log(`Arquivos disponíveis: ${fs.readdirSync(__dirname).join(', ')}`);
     
     if (!fs.existsSync(imagePath)) {
       console.error(`Imagem não encontrada: ${imagePath}`);
