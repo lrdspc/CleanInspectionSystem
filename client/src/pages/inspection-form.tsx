@@ -12,7 +12,6 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InspectionProblems, INSPECTION_ISSUES, TILE_MODELS, CONSTRUCTION_TYPES } from "@/components/inspection-problems";
 import { generateInspectionReport } from "@/lib/report-generator";
 import { useToast } from "@/hooks/use-toast";
-import { ReportPreview } from "@/components/report-preview"; // Added import
 
 function generateRandomData(): Partial<InsertInspection> {
   const cities = ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Curitiba", "Porto Alegre", "Recife", "Salvador"];
@@ -349,14 +348,10 @@ export default function InspectionForm() {
               <InspectionProblems form={form} />
 
               <div className="flex gap-4">
-                <div className="w-1/2">
+                <div className="w-full">
                   <Button type="submit" className="w-full" disabled={mutation.isPending}>
                     {mutation.isPending ? "Gerando relatório..." : "Gerar Relatório"}
                   </Button>
-                </div>
-                <div className="w-1/2 bg-white shadow-lg rounded-lg p-4">
-                  <h2 className="text-lg font-bold mb-4">Preview do Relatório</h2>
-                  <ReportPreview formData={form.watch()} />
                 </div>
               </div>
             </form>
