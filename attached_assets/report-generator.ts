@@ -47,7 +47,7 @@ const FONTS = {
 
 const ISSUE_IMAGES: Record<string, { path: string; caption: string; width: number; height: number; }> = {
   "Armazenagem Incorreta": {
-    path: path.join(__dirname, "image_1740422278166.png"),
+    path: path.join(__dirname, "images", "image_1740422278166.png"),
     caption: "Exemplo de armazenagem incorreta de telhas Brasilit",
     width: 500,
     height: 350
@@ -114,22 +114,63 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   if (!issueImage) return;
 
   try {
-    const imageBuffer = fs.readFileSync(issueImage.path);
+    const imagePath = path.join(__dirname, 'images', path.basename(issueImage.path));
+    console.log(`Tentando carregar imagem de: ${imagePath}`);
+    
+    if (!fs.existsSync(imagePath)) {
+      console.error(`Imagem não encontrada: ${imagePath}`);
+      return;
+    }
+
+    // Adiciona legenda antes da imagem
     paragraphs.push(
       new Paragraph({
+        spacing: { before: 120, after: 60 },
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+            text: issueImage.caption,
+            size: 20,
+            italics: true
+          })
+        ]
+      })
+    );
+
+    const imageBuffer = fs.readFileSync(issueImage.path);
+    console.log(`Imagem carregada com sucesso: ${issueImage.path}`);
+    
+    paragraphs.push(
+      new Paragraph({
+        spacing: { before: 60, after: 240 },
+        alignment: AlignmentType.CENTER,
         children: [
           new ImageRun({
             data: imageBuffer,
             transformation: {
-              width: 500,
-              height: 350,
+              width: issueImage.width,
+              height: issueImage.height,
             }
           }),
         ],
       })
     );
   } catch (error) {
-    console.error(`Error adding image: ${error}`);
+    console.error(`Erro ao adicionar imagem para ${issue}: ${error}`);
+    paragraphs.push(
+      new Paragraph({
+        spacing: { before: 120, after: 60 },
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+            text: `[Erro ao carregar imagem para: ${issue}]`,
+            size: 20,
+            color: "FF0000",
+            bold: true
+          })
+        ]
+      })
+    );
   }
 }
 
