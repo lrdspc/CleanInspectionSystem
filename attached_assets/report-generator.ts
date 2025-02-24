@@ -114,22 +114,39 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   if (!issueImage) return;
 
   try {
+    // Adiciona legenda antes da imagem
+    paragraphs.push(
+      new Paragraph({
+        spacing: { before: 120, after: 60 },
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+            text: issueImage.caption,
+            size: 20,
+            italics: true
+          })
+        ]
+      })
+    );
+
     const imageBuffer = fs.readFileSync(issueImage.path);
     paragraphs.push(
       new Paragraph({
+        spacing: { before: 60, after: 240 },
+        alignment: AlignmentType.CENTER,
         children: [
           new ImageRun({
             data: imageBuffer,
             transformation: {
-              width: 500,
-              height: 350,
+              width: issueImage.width,
+              height: issueImage.height,
             }
           }),
         ],
       })
     );
   } catch (error) {
-    console.error(`Error adding image: ${error}`);
+    console.error(`Error adding image for ${issue}: ${error}`);
   }
 }
 
