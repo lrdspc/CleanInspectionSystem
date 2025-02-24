@@ -124,8 +124,54 @@ const ISSUE_IMAGES: Record<string, IssueImage> = {
     caption: "Exemplo de sentido de montagem incorreto em telhas Brasilit",
     width: 500,
     height: 350
+  },
+  "image_1740422998193.png": {
+    path: path.join(__dirname, "image_1740422998193.png"),
+    caption: "New Image Caption",
+    width: 500,
+    height: 350
   }
 };
+
+// Add image to report with error handling
+function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
+  const issueImage = ISSUE_IMAGES[issue];
+  if (issueImage && fs.existsSync(issueImage.path)) {
+    try {
+      const imageBuffer = fs.readFileSync(issueImage.path);
+      paragraphs.push(
+        new Paragraph({
+          spacing: { before: 120, after: 60 },
+          alignment: AlignmentType.CENTER,
+          children: [
+            new ImageRun({
+              data: imageBuffer,
+              transformation: {
+                width: issueImage.width,
+                height: issueImage.height,
+              },
+              type: "image/png"
+            } as IImageOptions),
+          ],
+        }),
+        new Paragraph({
+          spacing: { before: 60, after: 240 },
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: issueImage.caption,
+              font: FONTS.primary,
+              size: 20,
+              italics: true,
+            }),
+          ],
+        })
+      );
+    } catch (error) {
+      console.error(`Error loading image for issue ${issue}:`, error);
+    }
+  }
+}
 
 // Gerador principal do relatório
 export async function generateInspectionReport(inspection: Inspection): Promise<Blob> {
@@ -470,7 +516,6 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
         }),
       ],
     }),
-
     // Texto de transição antes da análise
     new Paragraph({
       spacing: { before: 120, after: 240 },
@@ -486,14 +531,14 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
   ];
 
   if (inspection.issues?.length) {
-    inspection.issues.forEach((issue, index) => {
+    inspection.issues.forEach((issue) => {
       // Add issue title and description
       paragraphs.push(
         new Paragraph({
           spacing: { before: 240, after: 60 },
           children: [
             new TextRun({
-              text: `${index + 1}. ${issue}`,
+              text: `${issue}`,
               font: FONTS.primary,
               size: 24,
               bold: true,
@@ -513,39 +558,7 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
         })
       );
 
-      // Add image if available for this issue
-      const issueImage = ISSUE_IMAGES[issue];
-      if (issueImage && fs.existsSync(issueImage.path)) {
-        const imageBuffer = fs.readFileSync(issueImage.path);
-        paragraphs.push(
-          new Paragraph({
-            spacing: { before: 120, after: 60 },
-            alignment: AlignmentType.CENTER,
-            children: [
-              new ImageRun({
-                data: imageBuffer,
-                transformation: {
-                  width: issueImage.width,
-                  height: issueImage.height,
-                },
-                type: "image/png"
-              } as IImageOptions),
-            ],
-          }),
-          new Paragraph({
-            spacing: { before: 60, after: 240 },
-            alignment: AlignmentType.CENTER,
-            children: [
-              new TextRun({
-                text: issueImage.caption,
-                font: FONTS.primary,
-                size: 20,
-                italics: true,
-              }),
-            ],
-          })
-        );
-      }
+      addImageToReport(issue, paragraphs);
     });
   }
 
