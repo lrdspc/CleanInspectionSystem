@@ -678,4 +678,4 @@ function generateSignatures(inspection: Inspection): Paragraph[] {
     }),
   ];
 }
-</replit_final}
+</replit```javascript
