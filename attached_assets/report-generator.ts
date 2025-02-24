@@ -44,48 +44,34 @@ const FONTS = {
   secondary: "Arial",
 };
 
-const ISSUE_IMAGES: Record<string, { filename: string; caption: string; width: number; height: number; }> = {
+const ISSUE_IMAGES: Record<string, { filename: string; caption: string; }> = {
   "Armazenagem Incorreta": {
     filename: "armazenagem-incorreta.png",
-    caption: "Exemplo de armazenagem incorreta de telhas Brasilit",
-    width: 500,
-    height: 350
+    caption: "Exemplo de armazenagem incorreta de telhas Brasilit"
   },
   "Carga Permanente sobre as Telhas": {
     filename: "carga-permanente.png",
-    caption: "Exemplo de carga permanente inadequada sobre telhas Brasilit",
-    width: 500,
-    height: 350
+    caption: "Exemplo de carga permanente inadequada sobre telhas Brasilit"
   },
   "Corte de Canto Incorreto ou Ausente": {
     filename: "corte-canto-incorreto.png",
-    caption: "Exemplo de corte de canto incorreto em telha Brasilit",
-    width: 500,
-    height: 350
+    caption: "Exemplo de corte de canto incorreto em telha Brasilit"
   },
   "Fixação Irregular das Telhas": {
     filename: "fixacao-irregular.png",
-    caption: "Exemplo de fixação irregular em telhas Brasilit",
-    width: 500,
-    height: 350
+    caption: "Exemplo de fixação irregular em telhas Brasilit"
   },
   "Inclinação da Telha Inferior ao Recomendado": {
     filename: "inclinacao-incorreta.png",
-    caption: "Exemplo de inclinação inadequada em telhas Brasilit",
-    width: 500,
-    height: 350
+    caption: "Exemplo de inclinação inadequada em telhas Brasilit"
   },
   "Marcas de Caminhamento sobre o Telhado": {
     filename: "marca-caminhamento.png",
-    caption: "Exemplo de marcas de caminhamento inadequado sobre telhas Brasilit",
-    width: 500,
-    height: 350
+    caption: "Exemplo de marcas de caminhamento inadequado sobre telhas Brasilit"
   },
   "Balanço Livre do Beiral Incorreto": {
     filename: "balanco-incorreto.png",
-    caption: "Exemplo de balanço livre incorreto do beiral em telhas Brasilit",
-    width: 500,
-    height: 350
+    caption: "Exemplo de balanço livre incorreto do beiral em telhas Brasilit"
   }
 };
 
@@ -97,7 +83,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   }
 
   try {
-    const workspacePath = '/home/runner/workspace';
+    const workspacePath = process.cwd();
     const imagePath = path.join(workspacePath, 'attached_assets', 'images', issueImage.filename);
     console.log(`Tentando carregar imagem: ${imagePath}`);
 
@@ -109,6 +95,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
     const imageBuffer = fs.readFileSync(imagePath);
     console.log(`Imagem carregada com sucesso: ${imagePath} (${imageBuffer.length} bytes)`);
 
+    // Adiciona a legenda antes da imagem
     paragraphs.push(
       new Paragraph({
         spacing: { before: 120, after: 60 },
@@ -120,7 +107,11 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
             italics: true
           })
         ]
-      }),
+      })
+    );
+
+    // Adiciona a imagem com configurações específicas para DOCX
+    paragraphs.push(
       new Paragraph({
         spacing: { before: 60, after: 240 },
         alignment: AlignmentType.CENTER,
@@ -128,13 +119,22 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
           new ImageRun({
             data: imageBuffer,
             transformation: {
-              width: issueImage.width,
-              height: issueImage.height,
+              width: 400,
+              height: 300,
+            },
+            floating: {
+              horizontalPosition: {
+                offset: 0,
+              },
+              verticalPosition: {
+                offset: 0,
+              },
             },
           }),
         ],
       })
     );
+
     console.log(`Imagem adicionada com sucesso ao relatório: ${issue}`);
   } catch (error) {
     console.error(`Erro ao adicionar imagem para ${issue}:`, error);
@@ -678,3 +678,4 @@ function generateSignatures(inspection: Inspection): Paragraph[] {
     }),
   ];
 }
+</replit_final}
