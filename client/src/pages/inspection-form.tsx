@@ -346,9 +346,17 @@ export default function InspectionForm() {
 
               <InspectionProblems form={form} />
 
-              <Button type="submit" className="w-full" disabled={mutation.isPending}>
-                {mutation.isPending ? "Gerando relatório..." : "Gerar Relatório"}
-              </Button>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Button type="submit" className="w-full" disabled={mutation.isPending}>
+                    {mutation.isPending ? "Gerando relatório..." : "Gerar Relatório"}
+                  </Button>
+                </div>
+                <div className="fixed top-0 right-0 w-1/2 h-full bg-white shadow-lg overflow-auto p-4">
+                  <h2 className="text-lg font-bold mb-4">Preview do Relatório</h2>
+                  <ReportPreview formData={form.getValues()} />
+                </div>
+              </div>
             </form>
           </Form>
         </CardContent>
