@@ -110,7 +110,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
       })
     );
 
-    // Adiciona a imagem usando configuração simplificada
+    // Adiciona a imagem com a configuração correta para DOCX
     paragraphs.push(
       new Paragraph({
         spacing: { before: 60, after: 240 },
@@ -121,6 +121,20 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
             transformation: {
               width: 400,
               height: 300
+            },
+            floating: {
+              horizontalPosition: {
+                relative: "margin",
+                align: "center"
+              },
+              verticalPosition: {
+                relative: "paragraph",
+                align: "center"
+              },
+              wrap: {
+                type: "square",
+                side: "bothSides"
+              }
             }
           })
         ]
@@ -659,7 +673,7 @@ function generateSignatures(inspection: Inspection): Paragraph[] {
       ],
     }),
     new Paragraph({
-      spacing: { before: 120, after: 120 },
+      spacing: { before: 120, after:120 },
       children: [
         new TextRun({
           text: "Departamento de Assistência Técnica",
