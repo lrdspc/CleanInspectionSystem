@@ -3,8 +3,30 @@ import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/for
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UseFormReturn } from "react-hook-form";
 import type { InsertInspection } from "@shared/schema";
-import { ImageUpload } from "./ImageUpload";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+
+export const CONSTRUCTION_TYPES = [
+  "Residencial",
+  "Comercial", 
+  "Industrial",
+  "Outro"
+];
+
+export const TILE_MODELS = [
+  "Fibrotex",
+  "Ondina",
+  "Ondina Plus",
+  "Ondulada",
+  "Translúcida",
+  "Topcomfort",
+  "Maxionda",
+  "Onda 50",
+  "Kalheta",
+  "Kalheta 49",
+  "Kalhetão 90",
+  "Outro"
+];
 
 export const INSPECTION_ISSUES = [
   "Armazenagem Incorreta",
@@ -23,47 +45,24 @@ export const INSPECTION_ISSUES = [
   "Fixação de Acessórios Complementares Realizada de Forma Inadequada"
 ];
 
-export const TILE_MODELS = [
-  "Fibrotex",
-  "Ondina",
-  "Ondina Plus",
-  "Ondulada",
-  "Translúcida",
-  "Topcomfort",
-  "Maxionda",
-  "Onda 50",
-  "Kalheta",
-  "Kalheta 49",
-  "Kalhetão 90",
-  "Outro"
-];
-
-export const CONSTRUCTION_TYPES = [
-  "Residencial",
-  "Comercial",
-  "Industrial",
-  "Outro"
-];
-
 export function InspectionProblems({ form }: { form: UseFormReturn<InsertInspection> }) {
-  const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
-
-  const handleImageUpload = async (file: File) => {
-    if (!selectedIssue) return;
+  const handleImageUpload = (issue: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
     try {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
 
-        // Update the form with the new image
+        // Atualiza o form com a nova imagem
         const currentImages = form.getValues("issueImages") || [];
         const updatedImages = [
-          ...currentImages.filter(img => img.issueType !== selectedIssue),
+          ...currentImages.filter(img => img.issueType !== issue),
           {
-            issueType: selectedIssue,
+            issueType: issue,
             imageUrl: base64String,
-            caption: `Foto do problema: ${selectedIssue}`
+            caption: `Foto do problema: ${issue}`
           }
         ];
 
@@ -81,9 +80,9 @@ export function InspectionProblems({ form }: { form: UseFormReturn<InsertInspect
         <CardTitle>Problemas Identificados</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-6">
           {INSPECTION_ISSUES.map((issue) => (
-            <div key={issue} className="space-y-4">
+            <div key={issue} className="border rounded-lg p-4 space-y-4">
               <FormField
                 control={form.control}
                 name="issues"
@@ -98,11 +97,9 @@ export function InspectionProblems({ form }: { form: UseFormReturn<InsertInspect
                             ? [...current, issue]
                             : current.filter((i) => i !== issue);
                           field.onChange(updated);
-                          if (checked) {
-                            setSelectedIssue(issue);
-                          } else {
-                            setSelectedIssue(null);
-                            // Remove a imagem se o problema for desmarcado
+
+                          // Remove a imagem se o problema for desmarcado
+                          if (!checked) {
                             const currentImages = form.getValues("issueImages") || [];
                             form.setValue(
                               "issueImages",
@@ -112,25 +109,39 @@ export function InspectionProblems({ form }: { form: UseFormReturn<InsertInspect
                         }}
                       />
                     </FormControl>
-                    <FormLabel className="font-normal">{issue}</FormLabel>
+                    <FormLabel className="font-normal text-base">{issue}</FormLabel>
                   </FormItem>
                 )}
               />
+
+              {/* Área de upload e preview apenas se o problema estiver selecionado */}
               {form.watch("issues")?.includes(issue) && (
-                <div className="ml-8">
-                  <ImageUpload
-                    onImageUpload={handleImageUpload}
-                    label={`Adicionar foto para ${issue}`}
-                  />
-                  {/* Preview da imagem */}
+                <div className="ml-8 space-y-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Adicionar foto do problema
+                    </label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(issue, e)}
+                      className="cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Preview da imagem com melhor visibilidade */}
                   {form.watch("issueImages")?.find(img => img.issueType === issue) && (
-                    <div className="mt-2">
+                    <div className="bg-white p-4 rounded-lg border">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Preview da imagem:</p>
                       <img
                         src={form.watch("issueImages")?.find(img => img.issueType === issue)?.imageUrl}
                         alt={`Preview: ${issue}`}
-                        className="max-w-full h-auto rounded-lg"
-                        style={{ maxHeight: '200px' }}
+                        className="max-w-full h-auto rounded-lg shadow-sm"
+                        style={{ maxHeight: '300px', objectFit: 'contain' }}
                       />
+                      <p className="text-sm text-gray-500 mt-2 italic">
+                        Imagem carregada para: {issue}
+                      </p>
                     </div>
                   )}
                 </div>
