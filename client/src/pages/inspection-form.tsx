@@ -115,8 +115,8 @@ export default function InspectionForm() {
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
             <span>Nova Inspeção Técnica</span>
-            <Button
-              variant="outline"
+            <Button 
+              variant="outline" 
               onClick={handleGenerateTestData}
               type="button"
             >
@@ -346,13 +346,9 @@ export default function InspectionForm() {
 
               <InspectionProblems form={form} />
 
-              <div className="flex gap-4">
-                <div className="w-full">
-                  <Button type="submit" className="w-full" disabled={mutation.isPending}>
-                    {mutation.isPending ? "Gerando relatório..." : "Gerar Relatório"}
-                  </Button>
-                </div>
-              </div>
+              <Button type="submit" className="w-full" disabled={mutation.isPending}>
+                {mutation.isPending ? "Gerando relatório..." : "Gerar Relatório"}
+              </Button>
             </form>
           </Form>
         </CardContent>
