@@ -48,6 +48,16 @@ interface IssueImage {
   height: number;
 }
 
+// Update the ImageRun interface to fix TypeScript error
+interface IImageOptions {
+  data: Buffer;
+  transformation: {
+    width: number;
+    height: number;
+  };
+  type?: string;
+}
+
 const FONTS = {
   primary: "Arial",
   secondary: "Arial",
@@ -55,13 +65,90 @@ const FONTS = {
 
 // Add mapping for issue images
 const ISSUE_IMAGES: Record<string, IssueImage> = {
-  "Corte de Canto Incorreto ou Ausente": {
-    path: path.join(__dirname, "images", "corte-canto-incorreto.png"),
-    caption: "Exemplo de corte de canto incorreto em telha Brasilit",
-    width: 400,
-    height: 300
+  "Armazenagem Incorreta": {
+    path: path.join(__dirname, "image_1740422278166.png"),
+    caption: "Exemplo de armazenagem incorreta de telhas Brasilit",
+    width: 500,
+    height: 350
   },
-  // Add more mappings as images become available
+  "Carga Permanente sobre as Telhas": {
+    path: path.join(__dirname, "image_1740422372023.png"),
+    caption: "Exemplo de carga permanente inadequada sobre telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Corte de Canto Incorreto ou Ausente": {
+    path: path.join(__dirname, "image_1740422394929.png"),
+    caption: "Exemplo de corte de canto incorreto em telha Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Fixação Irregular das Telhas": {
+    path: path.join(__dirname, "image_1740422418920.png"),
+    caption: "Exemplo de fixação irregular em telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Inclinação da Telha Inferior ao Recomendado": {
+    path: path.join(__dirname, "image_1740422431194.png"),
+    caption: "Exemplo de inclinação inadequada em telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Marcas de Caminhamento sobre o Telhado": {
+    path: path.join(__dirname, "image_1740422449838.png"),
+    caption: "Exemplo de marcas de caminhamento inadequado sobre telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Balanço Livre do Beiral Incorreto": {
+    path: path.join(__dirname, "image_1740422462274.png"),
+    caption: "Exemplo de balanço livre incorreto do beiral em telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Número de Apoios e Vão Livre Inadequados": {
+    path: path.join(__dirname, "image_1740422475343.png"),
+    caption: "Exemplo de número de apoios e vão livre inadequados em telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Recobrimento Incorreto": {
+    path: path.join(__dirname, "image_1740422488668.png"),
+    caption: "Exemplo de recobrimento incorreto em telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Sentido de Montagem Incorreto": {
+    path: path.join(__dirname, "image_1740422517924.png"),
+    caption: "Exemplo de sentido de montagem incorreto em telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Estrutura Desalinhada": {
+    path: path.join(__dirname, "image_1740422531117.png"),
+    caption: "Exemplo de estrutura desalinhada em telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Uso de Cumeeira Cerâmica": {
+    path: path.join(__dirname, "image_1740422544112.png"),
+    caption: "Exemplo de uso de cumeeira cerâmica em telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Uso de Argamassa em Substituição a Peças Complementares": {
+    path: path.join(__dirname, "image_1740422557399.png"),
+    caption: "Exemplo de uso de argamassa em substituição a peças complementares em telhas Brasilit",
+    width: 500,
+    height: 350
+  },
+  "Fixação de Acessórios Complementares Realizada de Forma Inadequada": {
+    path: path.join(__dirname, "image_1740422571215.png"),
+    caption: "Exemplo de fixação inadequada de acessórios complementares em telhas Brasilit",
+    width: 500,
+    height: 350
+  }
 };
 
 // Gerador principal do relatório
@@ -465,7 +552,8 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
                   width: issueImage.width,
                   height: issueImage.height,
                 },
-              }),
+                type: "image/png"
+              } as IImageOptions),
             ],
           }),
           new Paragraph({
