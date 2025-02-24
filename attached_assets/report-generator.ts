@@ -124,12 +124,6 @@ const ISSUE_IMAGES: Record<string, IssueImage> = {
     caption: "Exemplo de sentido de montagem incorreto em telhas Brasilit",
     width: 500,
     height: 350
-  },
-  "image_1740422998193.png": {
-    path: path.join(__dirname, "image_1740422998193.png"),
-    caption: "New Image Caption",
-    width: 500,
-    height: 350
   }
 };
 
