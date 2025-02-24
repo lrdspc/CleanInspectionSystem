@@ -137,7 +137,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
       })
     );
 
-    const imageBuffer = fs.readFileSync(issueImage.path);
+    const imageBuffer = fs.readFileSync(imagePath);
     console.log(`Imagem carregada com sucesso: ${issueImage.path}`);
     
     paragraphs.push(
