@@ -21,7 +21,7 @@ const FONTS = {
 // Função auxiliar para criar parágrafos de texto formatado
 function createFormattedParagraph(text: string, options: { bold?: boolean; size?: number; spacing?: { before: number; after: number }; alignment?: AlignmentType } = {}) {
   return new Paragraph({
-    spacing: options.spacing || { before: 120, after: 120 },
+    spacing: options.spacing || { before: 240, after: 240 }, // Aumentei o espaçamento padrão
     alignment: options.alignment || AlignmentType.LEFT,
     children: [
       new TextRun({
@@ -116,87 +116,30 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
           alignment: AlignmentType.CENTER,
         }),
 
-        // Informações básicas
-        new Paragraph({
-          spacing: { before: 120, after: 120 },
-          children: [
-            new TextRun({
-              text: `Data da vistoria: ${inspection.dateInspected ? format(new Date(inspection.dateInspected), 'dd/MM/yyyy') : ""}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Cliente: ${inspection.clientName}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Empreendimento: ${inspection.constructionType}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Cidade: ${inspection.city}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Endereço: ${inspection.address}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `FAR/Protocolo: ${inspection.protocolNumber}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Assunto: ${inspection.subject}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Elaborado por: ${inspection.technicianName}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Departamento: ${inspection.department}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Unidade: ${inspection.unit}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Coordenador Responsável: ${inspection.coordinator}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Gerente Responsável: ${inspection.manager}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-            new TextRun({
-              text: `Regional: ${inspection.region}\n`,
-              font: FONTS.primary,
-              size: 24,
-            }),
-          ],
-        }),
+        // Informações iniciais - cada uma em uma linha separada com espaçamento maior
+        createFormattedParagraph(`Data de vistoria: ${inspection.dateInspected ? format(new Date(inspection.dateInspected), 'dd/MM/yyyy') : ""}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Cliente: ${inspection.clientName}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Empreendimento: ${inspection.constructionType}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Cidade: ${inspection.city}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Endereço: ${inspection.address}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`FAR/Protocolo: ${inspection.protocolNumber}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Assunto: AT - BRA - PERMEABILIDADE - Telhado com vazamento Geral`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Elaborado por: ${inspection.technicianName}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Departamento: ${inspection.department}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Unidade: ${inspection.unit}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Coordenador Responsável: ${inspection.coordinator}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Gerente Responsável: ${inspection.manager}`, { spacing: { before: 240, after: 240 } }),
+        createFormattedParagraph(`Regional: ${inspection.region}`, { spacing: { before: 240, after: 240 } }),
 
-        // Introdução
+        // Introdução com título
         createFormattedParagraph("Introdução", {
           bold: true,
           size: 32,
-          spacing: { before: 240, after: 120 },
+          spacing: { before: 360, after: 240 },
         }),
 
         new Paragraph({
-          spacing: { before: 120, after: 120 },
+          spacing: { before: 240, after: 240 },
           alignment: AlignmentType.JUSTIFIED,
           children: [
             new TextRun({
@@ -205,46 +148,43 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
               size: 24,
             }),
             new TextRun({
-              text: "Em atenção à vossa solicitação, analisamos as evidências encontradas, para avaliar as manifestações patológicas reclamadas nas telhas da nossa aplicada em sua cobertura conforme registro de reclamação.\n\n",
+              text: "Em atenção à vossa solicitação, analisamos as evidências encontradas, para avaliar as manifestações patológicas reclamadas nas telhas da nossa marca aplicada em sua cobertura conforme registro de reclamação.\n\n",
               font: FONTS.primary,
               size: 24,
             }),
             new TextRun({
-              text: "O modelo de telha escolhido para o qual foi feita a especificação de projeto, bem como os demais, possui a necessidade de seguir rigorosamente as orientações técnicas de armazenagem, manuseio e principalmente instalação, que são condições mandatórias para que o produto cumpra por mais de anos sua finalidade como sistema completo.\n",
+              text: "O modelo de telha escolhido para qual foi feita a especificação de projeto, bem como os demais, possui a necessidade de seguir rigorosamente as orientações técnicas de armazenagem, manuseio e principalmente instalação, que são condições mandatórias para que o produto cumpra por mais de anos sua finalidade como sistema completo.",
               font: FONTS.primary,
               size: 24,
             }),
           ],
         }),
 
-        // Especificações das Telhas (se houver)
-        ...(inspection.tileSpecs && inspection.tileSpecs.length > 0 ? [
-          new Paragraph({
-            spacing: { before: 120, after: 120 },
-            children: [
-              new TextRun({
-                text: "Especificações das Telhas:\n",
-                font: FONTS.primary,
-                size: 24,
-                bold: true,
-              }),
-              ...inspection.tileSpecs.map((spec, index) => new TextRun({
-                text: `${index + 1}. Modelo: ${spec.model || 'N/A'}, Espessura: ${spec.thickness || 'N/A'}, Dimensões: ${spec.dimensions || 'N/A'}, Quantidade: ${spec.count || 'N/A'}\n`,
-                font: FONTS.primary,
-                size: 24,
-              })),
-            ],
-          }),
-        ] : []),
+        // Quantidades e especificações
+        createFormattedParagraph("Quantidade e modelo:", {
+          bold: true,
+          spacing: { before: 360, after: 240 },
+        }),
 
-        // Problemas identificados
+        // Especificações das telhas com formato melhorado
+        ...(inspection.tileSpecs || []).map((spec) => [
+          createFormattedParagraph(`• Modelo: ${spec.model || 'N/A'}`, { spacing: { before: 120, after: 120 } }),
+          createFormattedParagraph(`• Espessura: ${spec.thickness || 'N/A'}`, { spacing: { before: 120, after: 120 } }),
+          createFormattedParagraph(`• Dimensões: ${spec.dimensions || 'N/A'}`, { spacing: { before: 120, after: 120 } }),
+          createFormattedParagraph(`• Quantidade: ${spec.count || 'N/A'}`, { spacing: { before: 120, after: 120 } }),
+          ...(calculateCoveredArea(spec) ? [
+            createFormattedParagraph(`• Área coberta (ÁREA)m² aproximadamente: ${calculateCoveredArea(spec)}`, { spacing: { before: 120, after: 120 } })
+          ] : []),
+        ]).flat(),
+
+        // Problemas identificados (mantém o formato existente)
         ...(inspection.issues || []).map((issue, index) => [
           createFormattedParagraph(`${index + 1}. ${issue}`, {
             bold: true,
-            spacing: { before: 120, after: 60 },
+            spacing: { before: 240, after: 120 },
           }),
           new Paragraph({
-            spacing: { before: 60, after: 120 },
+            spacing: { before: 120, after: 240 },
             alignment: AlignmentType.JUSTIFIED,
             children: [
               new TextRun({
@@ -260,55 +200,59 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
         createFormattedParagraph("Conclusão", {
           bold: true,
           size: 32,
-          spacing: { before: 240, after: 120 },
+          spacing: { before: 360, after: 240 },
           pageBreakBefore: true,
         }),
 
-        // Lista das não conformidades
-        ...(inspection.issues && inspection.issues.length > 0 ? [
-          createFormattedParagraph("Com base na análise técnica realizada, foram identificadas as seguintes não conformidades:", {
-            spacing: { before: 120, after: 120 },
-          }),
-          ...inspection.issues.map((issue, index) =>
-            createFormattedParagraph(`${index + 1}. ${issue}`, {
-              spacing: { before: 60, after: 60 },
-            })
-          ),
-        ] : []),
+        // Lista numerada das não conformidades
+        createFormattedParagraph("Com base na análise técnica realizada, foram identificadas as seguintes não conformidades:", {
+          spacing: { before: 240, after: 240 },
+        }),
 
-        // Texto da conclusão
+        ...(inspection.issues || []).map((issue, index) =>
+          createFormattedParagraph(`${index + 1}. ${issue}`, {
+            spacing: { before: 120, after: 120 },
+          })
+        ),
+
+        // Texto final da conclusão
         new Paragraph({
-          spacing: { before: 120, after: 120 },
+          spacing: { before: 240, after: 240 },
           alignment: AlignmentType.JUSTIFIED,
           children: [
             new TextRun({
-              text: inspection.issues && inspection.issues.length > 0
-                ? "Em função das não conformidades constatadas no manuseio e instalação das chapas Brasilit, finalizamos o atendimento considerando a reclamação como IMPROCEDENTE, onde os problemas reclamados se dão pelo incorreto manuseio e instalação das telhas e não a problemas relacionados à qualidade do material. Esta guia técnica está sempre disponível em www.brasilit.com.br.\n\nOs produtos da marca Brasilit atendem as Normas da Associação Brasileira de Normas Técnicas - ABNT, específicas para cada linha de produto, e cumprem as exigências para garantia do produto."
-                : "Após minuciosa análise técnica, não foram identificadas não conformidades significativas no sistema de cobertura. As telhas BRASILIT e sua instalação atendem às especificações técnicas e recomendações do fabricante.",
+              text: "Em função das não conformidades constatadas no manuseio e instalação das chapas Brasilit, finalizamos o atendimento considerando a reclamação como IMPROCEDENTE, onde os problemas reclamados se dão pelo incorreto manuseio e instalação das telhas e não a problemas relacionados à qualidade do material.\n\n",
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: "Ressaltamos que os produtos Brasilit também as Normas da Associação Brasileira de Normas Técnicas - ABNT, específicas para cada linha de produto, e comprovem as exigências para garantia do produto.\n\n",
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: "Desde já agradecemos e nos colocamos à disposição para quaisquer esclarecimentos adicionais.",
               font: FONTS.primary,
               size: 24,
             }),
           ],
         }),
 
-        createFormattedParagraph("Desde já agradecemos e nos colocamos à disposição para quaisquer esclarecimento adicional.", {
-          spacing: { before: 120, after: 120 },
-        }),
-
+        // Assinatura
         createFormattedParagraph("Atenciosamente,", {
-          spacing: { before: 240, after: 120 },
+          spacing: { before: 360, after: 240 },
         }),
 
         createFormattedParagraph("Saint-Gobain do Brasil Prod. Ind. e para Cons. Civil Ltda.", {
-          spacing: { before: 120, after: 60 },
+          spacing: { before: 240, after: 120 },
         }),
 
         createFormattedParagraph("Divisão Produtos Para Construção", {
-          spacing: { before: 60, after: 60 },
+          spacing: { before: 120, after: 120 },
         }),
 
         createFormattedParagraph("Departamento de Assistência Técnica", {
-          spacing: { before: 60, after: 60 },
+          spacing: { before: 120, after: 120 },
         }),
       ],
     }],
