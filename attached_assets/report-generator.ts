@@ -40,21 +40,12 @@ interface Inspection {
   issues?: string[];
 }
 
-// Add interface for issue images
-interface IssueImage {
-  path: string;
-  caption: string;
-  width: number;
-  height: number;
-}
-
 const FONTS = {
   primary: "Arial",
   secondary: "Arial",
 };
 
-// Add mapping for issue images
-const ISSUE_IMAGES: Record<string, IssueImage> = {
+const ISSUE_IMAGES: Record<string, { path: string; caption: string; width: number; height: number; }> = {
   "Armazenagem Incorreta": {
     path: path.join(__dirname, "image_1740422278166.png"),
     caption: "Exemplo de armazenagem incorreta de telhas Brasilit",
@@ -120,44 +111,25 @@ const ISSUE_IMAGES: Record<string, IssueImage> = {
 // Add image to report with error handling
 function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   const issueImage = ISSUE_IMAGES[issue];
-  if (!issueImage || !fs.existsSync(issueImage.path)) {
-    console.error(`Image not found for issue: ${issue}`);
-    return;
-  }
+  if (!issueImage) return;
 
   try {
     const imageBuffer = fs.readFileSync(issueImage.path);
-
     paragraphs.push(
       new Paragraph({
-        spacing: { before: 120, after: 60 },
-        alignment: AlignmentType.CENTER,
         children: [
           new ImageRun({
             data: imageBuffer,
             transformation: {
-              width: issueImage.width,
-              height: issueImage.height,
+              width: 500,
+              height: 350,
             },
-            altText: issueImage.caption
-          }),
-        ],
-      }),
-      new Paragraph({
-        spacing: { before: 60, after: 240 },
-        alignment: AlignmentType.CENTER,
-        children: [
-          new TextRun({
-            text: issueImage.caption,
-            font: FONTS.primary,
-            size: 20,
-            italics: true,
           }),
         ],
       })
     );
   } catch (error) {
-    console.error(`Error adding image for issue ${issue}:`, error);
+    console.error(`Error adding image: ${error}`);
   }
 }
 
