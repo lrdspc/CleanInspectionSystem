@@ -21,7 +21,24 @@ export class MemStorage implements IStorage {
 
   async createInspection(insertInspection: InsertInspection): Promise<Inspection> {
     const id = this.currentId++;
-    const inspection: Inspection = { ...insertInspection, id };
+    const inspection: Inspection = {
+      id,
+      dateInspected: insertInspection.dateInspected || null,
+      clientName: insertInspection.clientName || null,
+      constructionType: insertInspection.constructionType || null,
+      city: insertInspection.city || null,
+      address: insertInspection.address || null,
+      protocolNumber: insertInspection.protocolNumber || null,
+      subject: insertInspection.subject || null,
+      technicianName: insertInspection.technicianName || null,
+      department: insertInspection.department || null,
+      unit: insertInspection.unit || null,
+      coordinator: insertInspection.coordinator || null,
+      manager: insertInspection.manager || null,
+      region: insertInspection.region || null,
+      issues: insertInspection.issues || [],
+      tileSpecs: insertInspection.tileSpecs || []
+    };
     this.inspections.set(id, inspection);
     return inspection;
   }

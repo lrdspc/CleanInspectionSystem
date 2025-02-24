@@ -130,8 +130,8 @@ export default function InspectionForm() {
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
             <span>Nova Inspeção Técnica</span>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleGenerateTestData}
               type="button"
             >
@@ -150,7 +150,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Nome do Cliente</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -163,7 +163,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Data da Inspeção</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} value={field.value || ''} />
+                        <Input type="date" {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -176,7 +176,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Número do Protocolo</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -189,7 +189,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Tipo de Construção</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -202,7 +202,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Cidade</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -215,7 +215,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Endereço</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -228,7 +228,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Nome do Técnico</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -241,7 +241,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Departamento</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} defaultValue="Assistência Técnica" />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -254,7 +254,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Unidade</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -267,7 +267,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Coordenador</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -280,7 +280,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Gerente</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -293,7 +293,7 @@ export default function InspectionForm() {
                     <FormItem>
                       <FormLabel>Regional</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -314,7 +314,7 @@ export default function InspectionForm() {
                         <FormItem>
                           <FormLabel>Modelo</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ''} />
+                            <Input {...field} />
                           </FormControl>
                         </FormItem>
                       )}
@@ -326,7 +326,7 @@ export default function InspectionForm() {
                         <FormItem>
                           <FormLabel>Espessura</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ''} />
+                            <Input {...field} />
                           </FormControl>
                         </FormItem>
                       )}
@@ -338,7 +338,7 @@ export default function InspectionForm() {
                         <FormItem>
                           <FormLabel>Dimensões</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ''} />
+                            <Input {...field} />
                           </FormControl>
                         </FormItem>
                       )}
@@ -350,7 +350,7 @@ export default function InspectionForm() {
                         <FormItem>
                           <FormLabel>Quantidade</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ''} type="number" />
+                            <Input {...field} type="number" />
                           </FormControl>
                         </FormItem>
                       )}
