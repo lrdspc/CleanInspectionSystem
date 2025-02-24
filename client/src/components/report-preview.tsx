@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { format } from 'date-fns';
 import { type InsertInspection } from '@/shared/schema';
@@ -8,13 +9,14 @@ interface ReportPreviewProps {
 
 export function ReportPreview({ formData }: ReportPreviewProps) {
   return (
-    <div className="prose prose-sm max-w-none">
-      <div className="mb-6">
+    <div className="prose prose-sm max-w-none p-6 bg-white">
+      <div className="text-center mb-6">
+        <h1 className="text-xl font-bold mb-2">SAINT-GOBAIN BRASIL</h1>
         <h2 className="text-lg">Divisão Brasilit - Assistência Técnica</h2>
       </div>
 
       <div className="mb-6">
-        <h3 className="text-lg font-bold mb-4">RELATÓRIO DE VISTORIA TÉCNICA</h3>
+        <h3 className="text-lg font-bold">RELATÓRIO DE VISTORIA TÉCNICA</h3>
         <p>Data da vistoria: {formData.dateInspected ? format(new Date(formData.dateInspected), 'dd/MM/yyyy') : ''}</p>
         <p>Protocolo: {formData.protocolNumber || ''}</p>
       </div>
