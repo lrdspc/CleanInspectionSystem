@@ -117,12 +117,18 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
           alignment: AlignmentType.CENTER,
         }),
 
-        // Informações do cliente
+        // Informações básicas
         new Paragraph({
           spacing: { before: 120, after: 120 },
           children: [
             new TextRun({
-              text: `Data da Vistoria: ${inspection.dateInspected ? format(new Date(inspection.dateInspected), 'dd/MM/yyyy') : ""}\n`,
+              text: `Protocolo: ${inspection.protocolNumber}\n`,
+              font: FONTS.primary,
+              size: 24,
+              bold: true,
+            }),
+            new TextRun({
+              text: `Data da Vistoria: ${inspection.dateInspected ? format(new Date(inspection.dateInspected), 'dd/MM/yyyy') : ""}\n\n`,
               font: FONTS.primary,
               size: 24,
             }),
@@ -132,7 +138,7 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
               size: 24,
             }),
             new TextRun({
-              text: `Empreendimento: ${inspection.constructionType}\n`,
+              text: `Tipo de Construção: ${inspection.constructionType}\n`,
               font: FONTS.primary,
               size: 24,
             }),
@@ -142,12 +148,50 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
               size: 24,
             }),
             new TextRun({
-              text: `Endereço: ${inspection.address}\n`,
+              text: `Endereço: ${inspection.address}\n\n`,
               font: FONTS.primary,
               size: 24,
             }),
             new TextRun({
-              text: `Protocolo: ${inspection.protocolNumber}\n`,
+              text: `Técnico Responsável: ${inspection.technicianName}\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: `Departamento: ${inspection.department}\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: `Unidade: ${inspection.unit}\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: `Regional: ${inspection.region}\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: `Coordenador: ${inspection.coordinator}\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+            new TextRun({
+              text: `Gerente: ${inspection.manager}\n\n`,
+              font: FONTS.primary,
+              size: 24,
+            }),
+          ],
+        }),
+
+        // Introdução
+        new Paragraph({
+          spacing: { before: 120, after: 120 },
+          alignment: AlignmentType.JUSTIFIED,
+          children: [
+            new TextRun({
+              text: "Em atendimento à solicitação do cliente, realizamos vistoria técnica para avaliar as condições de instalação e conservação das telhas BRASILIT. A inspeção foi conduzida seguindo rigorosamente as normas técnicas e recomendações do fabricante, visando identificar possíveis não conformidades que possam comprometer o desempenho do sistema de cobertura.\n\n",
               font: FONTS.primary,
               size: 24,
             }),
@@ -160,6 +204,26 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
           size: 32,
           spacing: { before: 240, after: 120 },
         }),
+
+        // Especificações das Telhas (se houver)
+        ...(inspection.tileSpecs && inspection.tileSpecs.length > 0 ? [
+          new Paragraph({
+            spacing: { before: 120, after: 120 },
+            children: [
+              new TextRun({
+                text: "Especificações das Telhas:\n",
+                font: FONTS.primary,
+                size: 24,
+                bold: true,
+              }),
+              ...inspection.tileSpecs.map((spec, index) => new TextRun({
+                text: `${index + 1}. Modelo: ${spec.model || 'N/A'}, Espessura: ${spec.thickness || 'N/A'}, Dimensões: ${spec.dimensions || 'N/A'}, Quantidade: ${spec.count || 'N/A'}\n`,
+                font: FONTS.primary,
+                size: 24,
+              })),
+            ],
+          }),
+        ] : []),
 
         // Problemas identificados
         ...(inspection.issues || []).map((issue, index) => [
@@ -185,6 +249,7 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
           bold: true,
           size: 32,
           spacing: { before: 240, after: 120 },
+          pageBreakBefore: true,
         }),
 
         new Paragraph({
@@ -193,8 +258,8 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
           children: [
             new TextRun({
               text: inspection.issues && inspection.issues.length > 0
-                ? "Em função das não conformidades constatadas no manuseio e instalação das chapas Brasilit, finalizamos o atendimento considerando a reclamação como IMPROCEDENTE, onde os problemas reclamados se dão pelo incorreto manuseio e instalação das telhas e não a problemas relacionados à qualidade do material."
-                : "A análise técnica não identificou não conformidades significativas. As telhas e sua instalação atendem às especificações técnicas e recomendações do fabricante.",
+                ? "Em função das não conformidades constatadas no manuseio e instalação das chapas Brasilit, finalizamos o atendimento considerando a reclamação como IMPROCEDENTE, onde os problemas reclamados se dão pelo incorreto manuseio e instalação das telhas e não a problemas relacionados à qualidade do material. Ressaltamos que a correção das não conformidades identificadas é fundamental para garantir o desempenho adequado do sistema de cobertura e a segurança dos usuários.\n\nRecomendamos que todas as adequações sejam realizadas por profissionais qualificados, seguindo rigorosamente as orientações técnicas do fabricante. A Saint-Gobain Brasilit se coloca à disposição para eventuais esclarecimentos adicionais através de nossos canais de atendimento."
+                : "Após minuciosa análise técnica, não foram identificadas não conformidades significativas no sistema de cobertura. As telhas BRASILIT e sua instalação atendem às especificações técnicas e recomendações do fabricante, garantindo o desempenho adequado do produto. A Saint-Gobain Brasilit agradece a confiança e se mantém à disposição através de nossos canais de atendimento para quaisquer esclarecimentos adicionais que se façam necessários.",
               font: FONTS.primary,
               size: 24,
             }),
@@ -210,8 +275,29 @@ export async function generateInspectionReport(inspection: Inspection): Promise<
               font: FONTS.primary,
               size: 24,
             }),
+          ],
+        }),
+        new Paragraph({
+          spacing: { before: 120, after: 120 },
+          children: [
             new TextRun({
-              text: "Saint-Gobain do Brasil Prod. Ind. e para Cons. Civil Ltda.\n",
+              text: `${inspection.technicianName}\n`,
+              font: FONTS.primary,
+              size: 24,
+              bold: true,
+            }),
+            new TextRun({
+              text: "Assistência Técnica\n",
+              font: FONTS.primary,
+              size: 24,
+            }),
+          ],
+        }),
+        new Paragraph({
+          spacing: { before: 120, after: 120 },
+          children: [
+            new TextRun({
+              text: "Saint-Gobain do Brasil Produtos Industriais e para Construção Ltda.\n",
               font: FONTS.primary,
               size: 24,
             }),
