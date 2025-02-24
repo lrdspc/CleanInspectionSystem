@@ -47,7 +47,7 @@ const FONTS = {
 
 const ISSUE_IMAGES: Record<string, { path: string; caption: string; width: number; height: number; }> = {
   "Armazenagem Incorreta": {
-    path: path.join(__dirname, "image_1740422278166.png"),
+    path: "image_1740422278166.png",
     caption: "Exemplo de armazenagem incorreta de telhas Brasilit",
     width: 500,
     height: 350
@@ -114,22 +114,11 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   if (!issueImage) return;
 
   try {
-    if (!fs.existsSync(issueImage.path)) {
-      console.error(`Imagem não encontrada: ${issueImage.path}`);
-      paragraphs.push(
-        new Paragraph({
-          spacing: { before: 120, after: 60 },
-          alignment: AlignmentType.CENTER,
-          children: [
-            new TextRun({
-              text: `[Imagem não encontrada para: ${issue}]`,
-              size: 20,
-              color: "FF0000",
-              bold: true
-            })
-          ]
-        })
-      );
+    const imagePath = path.join(__dirname, 'images', path.basename(issueImage.path));
+    console.log(`Tentando carregar imagem de: ${imagePath}`);
+    
+    if (!fs.existsSync(imagePath)) {
+      console.error(`Imagem não encontrada: ${imagePath}`);
       return;
     }
 
