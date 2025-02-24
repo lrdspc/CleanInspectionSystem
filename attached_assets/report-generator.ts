@@ -47,7 +47,7 @@ const FONTS = {
 
 const ISSUE_IMAGES: Record<string, { path: string; caption: string; width: number; height: number; }> = {
   "Armazenagem Incorreta": {
-    path: "image_1740422278166.png",
+    path: path.join(__dirname, "images", "image_1740422278166.png"),
     caption: "Exemplo de armazenagem incorreta de telhas Brasilit",
     width: 500,
     height: 350
