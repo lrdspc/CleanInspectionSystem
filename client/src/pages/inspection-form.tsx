@@ -8,49 +8,52 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { insertInspectionSchema, type InsertInspection } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { InspectionProblems } from "@/components/inspection-problems";
+import { InspectionProblems, INSPECTION_ISSUES, TILE_MODELS, CONSTRUCTION_TYPES } from "@/components/inspection-problems";
 import { generateInspectionReport } from "@/lib/report-generator";
 import { useToast } from "@/hooks/use-toast";
 
 function generateRandomData(): Partial<InsertInspection> {
-  const cities = ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Curitiba", "Porto Alegre"];
-  const constructionTypes = ["Residencial", "Comercial", "Industrial", "Galpão", "Escola"];
-  const names = ["João Silva", "Maria Santos", "Pedro Oliveira", "Ana Costa", "Carlos Souza"];
-  const issues = [
-    "Armazenagem Incorreta",
-    "Carga Permanente sobre as Telhas",
-    "Corte de Canto Incorreto ou Ausente",
-    "Estrutura Desalinhada"
+  const cities = ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Curitiba", "Porto Alegre", "Recife", "Salvador"];
+  const names = [
+    "João Silva", "Maria Santos", "Pedro Oliveira", "Ana Costa", "Carlos Souza",
+    "Roberto Lima", "Fernanda Pereira", "Lucas Martins", "Patricia Alves"
   ];
+  const departments = ["Assistência Técnica", "Suporte Técnico", "Engenharia"];
+  const units = ["SP", "RJ", "MG", "PR", "RS", "BA", "PE"];
+  const regions = ["Sudeste", "Sul", "Nordeste", "Norte", "Centro-Oeste"];
 
   const getRandomElement = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)];
   const getRandomIssues = () => {
-    const numIssues = Math.floor(Math.random() * 3);
-    return issues.slice(0, numIssues);
+    const numIssues = Math.floor(Math.random() * 4); // 0 to 3 issues
+    const shuffled = [...INSPECTION_ISSUES].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, numIssues);
   };
 
   const protocolNumber = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
 
+  const tileThicknesses = ["5mm", "6mm", "8mm"];
+  const tileDimensions = ["2.44x1.10m", "1.83x1.10m", "3.05x1.10m", "3.66x1.10m"];
+
   return {
     dateInspected: new Date().toISOString().split('T')[0],
     clientName: getRandomElement(names),
-    constructionType: getRandomElement(constructionTypes),
+    constructionType: getRandomElement(CONSTRUCTION_TYPES),
     city: getRandomElement(cities),
     address: `Rua ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 1000)}`,
     protocolNumber: `INS-${protocolNumber}`,
-    subject: "Inspeção Técnica",
+    subject: "Inspeção Técnica de Telhas",
     technicianName: getRandomElement(names),
-    department: "Assistência Técnica",
-    unit: `Unidade ${Math.floor(Math.random() * 10) + 1}`,
+    department: getRandomElement(departments),
+    unit: getRandomElement(units),
     coordinator: getRandomElement(names),
     manager: getRandomElement(names),
-    region: "Sudeste",
+    region: getRandomElement(regions),
     issues: getRandomIssues(),
     tileSpecs: [{
-      model: "FIBROCIMENTO ONDULADA",
-      thickness: "5mm",
-      dimensions: "2.44x1.10m",
-      count: Math.floor(Math.random() * 100).toString()
+      model: getRandomElement(TILE_MODELS),
+      thickness: getRandomElement(tileThicknesses),
+      dimensions: getRandomElement(tileDimensions),
+      count: (Math.floor(Math.random() * 500) + 100).toString()
     }]
   };
 }
@@ -65,9 +68,9 @@ export default function InspectionForm() {
       dateInspected: new Date().toISOString().split('T')[0],
       issues: [],
       tileSpecs: [{
-        model: "FIBROCIMENTO ONDULADA",
-        thickness: "5mm",
-        dimensions: "2.44x1.10m",
+        model: "",
+        thickness: "",
+        dimensions: "",
         count: "0"
       }]
     }
@@ -281,6 +284,65 @@ export default function InspectionForm() {
                   )}
                 />
               </div>
+
+              {/* Tile Specifications */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Especificações das Telhas</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="tileSpecs.0.model"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Modelo</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ''} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="tileSpecs.0.thickness"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Espessura</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ''} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="tileSpecs.0.dimensions"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Dimensões</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ''} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="tileSpecs.0.count"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Quantidade</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ''} type="number" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
 
               <InspectionProblems form={form} />
 

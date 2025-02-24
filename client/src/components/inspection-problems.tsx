@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UseFormReturn } from "react-hook-form";
 import type { InsertInspection } from "@shared/schema";
 
-const INSPECTION_ISSUES = [
+export const INSPECTION_ISSUES = [
   "Armazenagem Incorreta",
   "Carga Permanente sobre as Telhas",
   "Corte de Canto Incorreto ou Ausente",
@@ -19,6 +19,28 @@ const INSPECTION_ISSUES = [
   "Uso de Cumeeira Cerâmica",
   "Uso de Argamassa em Substituição a Peças Complementares",
   "Fixação de Acessórios Complementares Realizada de Forma Inadequada"
+];
+
+export const TILE_MODELS = [
+  "Fibrotex",
+  "Ondina",
+  "Ondina Plus",
+  "Ondulada",
+  "Translúcida",
+  "Topcomfort",
+  "Maxionda",
+  "Onda 50",
+  "Kalheta",
+  "Kalheta 49",
+  "Kalhetão 90",
+  "Outro"
+];
+
+export const CONSTRUCTION_TYPES = [
+  "Residencial",
+  "Comercial",
+  "Industrial",
+  "Outro"
 ];
 
 export function InspectionProblems({ form }: { form: UseFormReturn<InsertInspection> }) {
