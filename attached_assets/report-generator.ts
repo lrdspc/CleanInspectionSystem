@@ -114,6 +114,25 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
   if (!issueImage) return;
 
   try {
+    if (!fs.existsSync(issueImage.path)) {
+      console.error(`Imagem não encontrada: ${issueImage.path}`);
+      paragraphs.push(
+        new Paragraph({
+          spacing: { before: 120, after: 60 },
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: `[Imagem não encontrada para: ${issue}]`,
+              size: 20,
+              color: "FF0000",
+              bold: true
+            })
+          ]
+        })
+      );
+      return;
+    }
+
     // Adiciona legenda antes da imagem
     paragraphs.push(
       new Paragraph({
@@ -130,6 +149,8 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
     );
 
     const imageBuffer = fs.readFileSync(issueImage.path);
+    console.log(`Imagem carregada com sucesso: ${issueImage.path}`);
+    
     paragraphs.push(
       new Paragraph({
         spacing: { before: 60, after: 240 },
@@ -146,7 +167,21 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
       })
     );
   } catch (error) {
-    console.error(`Error adding image for ${issue}: ${error}`);
+    console.error(`Erro ao adicionar imagem para ${issue}: ${error}`);
+    paragraphs.push(
+      new Paragraph({
+        spacing: { before: 120, after: 60 },
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+            text: `[Erro ao carregar imagem para: ${issue}]`,
+            size: 20,
+            color: "FF0000",
+            bold: true
+          })
+        ]
+      })
+    );
   }
 }
 
