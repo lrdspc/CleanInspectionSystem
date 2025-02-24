@@ -37,6 +37,11 @@ interface Inspection {
     count?: string;
   }>;
   issues?: string[];
+  issueImages?: Array<{
+    issueType: string;
+    imageUrl: string;
+    caption?: string;
+  }>;
 }
 
 const FONTS = {
@@ -75,7 +80,64 @@ const ISSUE_IMAGES: Record<string, { filename: string; caption: string; }> = {
   }
 };
 
-function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
+function addImageToReport(issue: string, paragraphs: Paragraph[], inspection?: Inspection): void {
+  const customImage = inspection?.issueImages?.find(img => img.issueType === issue);
+  if (customImage) {
+    try {
+      const imageData = customImage.imageUrl.split(',')[1];
+      const imageBuffer = Buffer.from(imageData, 'base64');
+
+      paragraphs.push(
+        new Paragraph({
+          spacing: { before: 120, after: 60 },
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: customImage.caption || `Foto do problema: ${issue}`,
+              size: 20,
+              italics: true
+            })
+          ]
+        })
+      );
+
+      paragraphs.push(
+        new Paragraph({
+          spacing: { before: 60, after: 240 },
+          alignment: AlignmentType.CENTER,
+          children: [
+            new ImageRun({
+              data: imageBuffer,
+              transformation: {
+                width: 400,
+                height: 300
+              },
+              floating: {
+                horizontalPosition: {
+                  relative: "margin",
+                  align: "center"
+                },
+                verticalPosition: {
+                  relative: "paragraph",
+                  align: "center"
+                },
+                wrap: {
+                  type: "square",
+                  side: "bothSides"
+                }
+              }
+            })
+          ]
+        })
+      );
+
+      console.log(`Imagem customizada adicionada com sucesso ao relatório: ${issue}`);
+      return;
+    } catch (error) {
+      console.error(`Erro ao adicionar imagem customizada para ${issue}:`, error);
+    }
+  }
+
   const issueImage = ISSUE_IMAGES[issue];
   if (!issueImage) {
     console.log(`Nenhuma imagem configurada para o problema: ${issue}`);
@@ -95,7 +157,6 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
     const imageBuffer = fs.readFileSync(imagePath);
     console.log(`Imagem carregada com sucesso: ${imagePath} (${imageBuffer.length} bytes)`);
 
-    // Adiciona a legenda antes da imagem
     paragraphs.push(
       new Paragraph({
         spacing: { before: 120, after: 60 },
@@ -110,7 +171,6 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
       })
     );
 
-    // Adiciona a imagem com a configuração correta para DOCX
     paragraphs.push(
       new Paragraph({
         spacing: { before: 60, after: 240 },
@@ -141,7 +201,7 @@ function addImageToReport(issue: string, paragraphs: Paragraph[]): void {
       })
     );
 
-    console.log(`Imagem adicionada com sucesso ao relatório: ${issue}`);
+    console.log(`Imagem padrão adicionada com sucesso ao relatório: ${issue}`);
   } catch (error) {
     console.error(`Erro ao adicionar imagem para ${issue}:`, error);
   }
@@ -513,7 +573,7 @@ function generateTechnicalSection(inspection: Inspection): Paragraph[] {
         })
       );
 
-      addImageToReport(issue, paragraphs);
+      addImageToReport(issue, paragraphs, inspection);
     });
   }
 
@@ -673,7 +733,7 @@ function generateSignatures(inspection: Inspection): Paragraph[] {
       ],
     }),
     new Paragraph({
-      spacing: { before: 120, after:120 },
+      spacing: { before: 120, after: 120 },
       children: [
         new TextRun({
           text: "Departamento de Assistência Técnica",
